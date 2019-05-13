@@ -1,9 +1,9 @@
-# import sys
-# sys.path.append('../')
+import sys
+sys.path.append('../')
 
-# from src.hello import app
+from src.hello import app
 
-from ..src.hello import app
+# from ..src.hello import app
 
 class TestClass(object):
     def setup_class(self):
