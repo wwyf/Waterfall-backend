@@ -27,3 +27,7 @@ class TestClass(object):
     def test_index(self):
         response = self.app.get('/')
         assert b'hello' == response.data
+    
+    def test_404(self):
+        response = self.app.get('/sfasfasfsadf')
+        assert b'404' == response.data
