@@ -1,0 +1,6 @@
+flask
+pymysql
+pytest
+Flask-SQLAlchemy
+Flask-marshmallow
+marshmallow-sqlalchemy
