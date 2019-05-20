@@ -1,10 +1,10 @@
 from flask import Flask, render_template, request, abort, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
-from run import app
+from src.run import app
 import json
 
-with open('db/sql_config.json', encoding='utf-8') as sqlConfFile:
+with open('src/db/sql_config.json', encoding='utf-8') as sqlConfFile:
     sqlConf = json.loads(sqlConfFile.read())
     sqlConnector = "mysql+pymysql://{}:{}@{}/{}".format(sqlConf['username'], sqlConf['password'], sqlConf['host'], sqlConf['database'])
     app.config['SQLALCHEMY_DATABASE_URI'] = sqlConnector
