@@ -1,4 +1,5 @@
 from flask import Flask
+from db import model
 
 
 app = Flask(__name__)
@@ -26,4 +27,4 @@ def page_not_found(e):
 
 
 if __name__ == '__main__':
-    app.run(host = '0.0.0.0',port=8669)
+    app.run(host = '0.0.0.0', port=8669, debug=True, threaded=True)
