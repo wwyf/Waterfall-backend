@@ -54,6 +54,21 @@ class Orders(db.Model):
         self.contect = contect
         self.status = 0
         self.progress = 0
+    def to_json(self):
+        return {
+            "name" : self.name,
+            "createdate" : self.createdate,
+            "deadline" : self.deadline,
+            "address" : self.address,
+            "amount" : self.amount,
+            "price" : self.price,
+            "totalprice" : self.totalprice,
+            "createuser" : self.createuser,
+            "comments" : self.comments,
+            "contect" : self.contect,
+            "status" : self.status,
+            "progress" : self.progress,
+        }
 
 class subOrders(db.Model):
     __tablename__ = 'subOrders'

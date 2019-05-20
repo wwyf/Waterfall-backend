@@ -1,5 +1,5 @@
 import os
-from flask import Flask
+from flask import Flask, request, jsonify
 from flask_restful import reqparse, abort, Api, Resource
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
@@ -31,6 +31,5 @@ app.config['SQLALCHEMY_COMMIT_ON_TEARDOWN'] = True
 #     pass
 
 # apply the blueprints to the app
-from src.api import todo, order
-app.register_blueprint(todo.bp)
+from src.api import order
 app.register_blueprint(order.bp)
