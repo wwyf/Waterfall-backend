@@ -1,6 +1,8 @@
 flask
 pymysql
 pytest
+flask_restful
+Flask-Session
 Flask-SQLAlchemy
 Flask-marshmallow
 marshmallow-sqlalchemy

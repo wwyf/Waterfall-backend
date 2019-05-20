@@ -1,17 +1,8 @@
 from flask import Flask, render_template, request, abort, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
-from src.run import app
+from src import app
 import json
-
-with open('src/db/sql_config.json', encoding='utf-8') as sqlConfFile:
-    sqlConf = json.loads(sqlConfFile.read())
-    sqlConnector = "mysql+pymysql://{}:{}@{}/{}".format(sqlConf['username'], sqlConf['password'], sqlConf['host'], sqlConf['database'])
-    app.config['SQLALCHEMY_DATABASE_URI'] = sqlConnector
-
-app.config['SQLALCHEMY_COMMIT_TEARDOWN'] = True
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
-app.config['SQLALCHEMY_COMMIT_ON_TEARDOWN'] = True
 
 db = SQLAlchemy(app)
 ma = Marshmallow(app)
@@ -87,6 +78,6 @@ class subOrders(db.Model):
         self.contect = contect
         self.status = 0
 
-db.create_all()
+# db.create_all()
 
 
