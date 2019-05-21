@@ -5,4 +5,5 @@ flask_restful
 Flask-Session
 Flask-SQLAlchemy
 Flask-marshmallow
+Flask-CORS
 marshmallow-sqlalchemy

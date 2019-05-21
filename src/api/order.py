@@ -1,12 +1,14 @@
 from flask import (
     Blueprint, flash, g, redirect, render_template, request, url_for,Flask, request, jsonify
 )
+from flask_cors import CORS
 from werkzeug.exceptions import abort
+
 
 from src.db.model import db, Orders
 
 bp = Blueprint('order', __name__, url_prefix='/apis')
-
+CORS(bp)
 
 @bp.route('/order/mainOrder', methods=('GET', 'POST'))
 def solve_mainOrder():
