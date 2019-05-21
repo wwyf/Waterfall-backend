@@ -24,7 +24,7 @@ def solve_mainOrder():
         db.session.commit()
         data_res = {
             'msg' : '提交成功',
-            'id' : 0
+            'id' : this_order.ID
         }
         res = {
             'code' : 0,
