@@ -33,3 +33,6 @@ app.config['SQLALCHEMY_COMMIT_ON_TEARDOWN'] = True
 # apply the blueprints to the app
 from src.api import order
 app.register_blueprint(order.bp)
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=8080)
