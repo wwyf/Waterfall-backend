@@ -96,24 +96,65 @@ paths:
                           
     post:
       summary: 提交新母订单
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                order_name: 
+                  description: 订单名称
+                  type: string
+                  example: 鲜天下实例订单名称
+                order_summary :
+                  description: 订单概述
+                  type: string
+                  example: 鲜天下示例订单概述
+                order_ddl:
+                  description : 订单截止日期
+                  type: string
+                  format: datatime
+                  example: "2019-02-05"
+                address:
+                  description: 订单收货地址
+                  type: string
+                  example: "广州市广州大学城外环东路132号"
+                quantity :
+                  description: 货物数量
+                  type: integer
+                  example: 50
+                price :
+                  description: 订单单价
+                  type: integer
+                  example: 100
+                comments :
+                  description: 订单备注
+                  type: string
+                  example: 空备注
+                phone :
+                  description: 联系方式
+                  type: string
+                  example: 13538383838
       responses:
         200:
           description: Successful response
           content:
             application/json:
               schema:
-                title: Sample
-                type: object
                 properties:
-                  test1:
-                    type: string
-                    description: test1 description
-                  test2:
+                  code:
                     type: integer
-                    description: test2 description
-                example:
-                  test1 : test1_example
-                  test2 : 1
+                    description: 错误码，0为正常
+                    example: 0
+                  data:
+                    type: object
+                    properties:
+                      msg:
+                        type: string
+                        example: "已提交成功"
+                      id:
+                        type: integer
+                        example: 89238
+
                   
 components:
   schemas:

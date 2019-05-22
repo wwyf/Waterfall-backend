@@ -3,6 +3,8 @@ from flask import (
 )
 from flask_cors import CORS
 from werkzeug.exceptions import abort
+import json
+import sys
 
 
 from src.db.model import db, Orders
@@ -13,14 +15,14 @@ CORS(bp)
 @bp.route('/order/mainOrder', methods=('GET', 'POST'))
 def solve_mainOrder():
     if request.method == 'POST':
-        order_name = request.form['order_name']
-        order_ddl = request.form['order_ddl']
-        address = request.form['address']
-        quantity = int(request.form['quantity'])
-        price = int(request.form['price'])
-        # order_summary = request.form['order_summary']
-        phone = request.form['phone']
-        comments = request.form['comments']
+        body_data = json.loads(request.data)
+        order_name = body_data['order_name']
+        order_ddl = body_data['order_ddl']
+        address = body_data['address']
+        quantity = int(body_data['quantity'])
+        price = int(body_data['price'])
+        phone = body_data['phone']
+        comments = body_data['comments']
         this_order = Orders(order_name, '2010-01-01', order_ddl, address, quantity, price, 1, comments, phone)
         db.session.add(this_order)
         db.session.commit()
