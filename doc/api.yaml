@@ -14,28 +14,18 @@ paths:
   # /apis/user/register:
   # /apis/user/logout:
   # /apis/user/{userId}:
-  # /apis/order/mainOrder/{mainOrderId}:
-  # /apis/order/mainOrder/finish:
-  # /apis/order/mainOrder/cancel:
-  # /apis/order/subOrder
-  # /apis/order/subOrder/{subOrderId}:
-  # /apis/order/subOrder/finish:
-  # /apis/order/subOrder/cancel:
-  # /apis/wallet/{userId}:
-  # /apis/wallet/deposit:
-  # /apis/wallet/withdraw:
   /apis/order/mainOrder:
     get:
+      tags: 
+        - 母订单相关
       summary: 获取所有主订单
+      description: 获得所有/前limit个订单，并且获得每个订单的内部详细字段。
       parameters:
-        - name : limit
-          description: 获取前limit个订单，如果不传入limit则limit默认为10，limit为-1代表获取所有订单
-          in : query
-          schema:
-            type : integer
+        - $ref: '#/components/parameters/limitParam'
+        - $ref: '#/components/parameters/skipParam'
       responses:
         200:
-          description: Successful response
+          description: 成功获取并返回订单信息
           content:
             application/json:
               schema:
@@ -48,53 +38,11 @@ paths:
                       orders:
                         type: array
                         items:
-                          type: object
-                          properties:
-                            mainOrderId:
-                              type: string
-                              description: 母订单id
-                            order_name:
-                              type: string
-                              description: 订单姓名
-                            create_date:
-                              type: string
-                              format: datetime
-                              description: 订单创建日期
-                              example: "2018-01-02"
-                            order_ddl:
-                              type: string
-                              description: 订单截止日期
-                              example: "2018-01-09"
-                            quantity:
-                              title: 订单货物数量
-                              type: integer
-                              example : 3
-                            price:
-                              title: 单件货物价格
-                              type: integer
-                              example : 534
-                            total_price:
-                              title: 订单总价格
-                              type: integer
-                              example: "243423"
-                            userID:
-                              title: 下达该订单的用户id
-                              type: integer
-                              format: int64
-                            order_status:
-                              title: 订单状态(TODO)
-                              type: integer
-                              enum:
-                                - 0
-                                - 1
-                                - 2
-                            order_progress:
-                              title: 订单进度
-                              type: integer
-                              maximum: 100
-                              minimum   : 0
+                          $ref: '#/components/schemas/mainOrder_view'
                           
     post:
+      tags: 
+        - 母订单相关
       summary: 提交新母订单
       requestBody:
         content:
@@ -108,7 +56,7 @@ paths:
                 order_summary :
                   description: 订单概述
                   type: string
-                  example: 鲜天下示例订单概述
+                  example: 鲜天下示例订单概述，我司需要大批量的i7-9900K。
                 order_ddl:
                   description : 订单截止日期
                   type: string
@@ -136,6 +84,251 @@ paths:
                   example: 13538383838
       responses:
         200:
+          $ref: '#/components/responses/GeneralResponseWithId'
+          
+
+  /apis/order/mainOrder/{mainOrderId}:
+    parameters:
+      - $ref: '#/components/parameters/mainOrderIdParam'
+    get:
+      tags: 
+        - 母订单相关
+      summary: 获取指定母订单信息
+      description: 获取指定母订单信息
+      responses:
+        200:
+          description: 成功获取并返回指定订单信息
+          content:
+            application/json:
+              schema:
+                properties:
+                  code:
+                    type: integer
+                  data:
+                    type: object
+                    properties:
+                      order:
+                        $ref: '#/components/schemas/mainOrder_view'
+                      msg:
+                        type: string
+                        example: "successful"
+    post:
+      tags: 
+        - 母订单相关
+      description: 编辑指定母订单信息，只修改已填写字段
+      summary: 编辑指定母订单
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                order_name: 
+                  description: 订单名称
+                  type: string
+                  example: 鲜天下实例订单名称
+                order_summary :
+                  description: 订单概述
+                  type: string
+                  example: 鲜天下示例订单概述，我司需要大批量的i7-9900K。
+                order_ddl:
+                  description : 订单截止日期
+                  type: string
+                  format: datatime
+                  example: "2019-02-05"
+                address:
+                  description: 订单收货地址
+                  type: string
+                  example: "广州市广州大学城外环东路132号"
+                quantity :
+                  description: 货物数量
+                  type: integer
+                  example: 50
+                price :
+                  description: 订单单价
+                  type: integer
+                  example: 100
+                comments :
+                  description: 订单备注
+                  type: string
+                  example: 空备注
+                phone :
+                  description: 联系方式
+                  type: string
+                  example: 13538383838
+      responses:
+        200:
+          $ref: '#/components/responses/GeneralResponse'
+  /apis/order/mainOrder/{mainOrderId}/finish:
+    parameters:
+      - $ref: '#/components/parameters/mainOrderIdParam'
+    post:
+      tags: 
+        - 母订单相关
+      summary: 完成指定订单
+      description: 讲该订单的状态修改为完成状态
+      responses:
+        200:
+          $ref: '#/components/responses/GeneralResponse'
+
+  /apis/order/mainOrder/{mainOrderId}/cancel:
+    parameters:
+      - $ref: '#/components/parameters/mainOrderIdParam'
+    post:
+      tags: 
+        - 母订单相关
+      summary: 取消指定订单
+      description: 讲该订单的状态修改为取消状态
+      responses:
+        200:
+          $ref: '#/components/responses/GeneralResponse'
+  /apis/order/subOrder:
+    get:
+      tags: 
+        - 子订单相关
+      summary: 获取所有子订单
+      description: 获得所有/前limit个订单，并且获得每个订单的内部详细字段。
+      parameters:
+        - $ref: '#/components/parameters/limitParam'
+        - $ref: '#/components/parameters/skipParam'
+      responses:
+        200:
+          description: 成功获取并返回子订单信息
+          content:
+            application/json:
+              schema:
+                properties:
+                  code:
+                    type: integer
+                  data:
+                    type: object
+                    properties:
+                      orders:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/subOrder_view'
+    post:
+      tags: 
+        - 子订单相关
+      summary: 提交新子订单
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                mainOrderId:
+                  type: string
+                  description: 与该子订单对应的母订单id
+                price:
+                  title: 单件货物价格
+                  type: integer
+                  example : 534
+                quantity:
+                  title: 子订单所能提供货物数量
+                  type: integer
+                  example : 3
+                comments :
+                  description: 订单备注
+                  type: string
+                  example: 空备注
+                phone :
+                  description: 联系方式
+                  type: string
+                  example: 13538383838
+      responses:
+        200:
+          $ref: '#/components/responses/GeneralResponseWithId'
+          
+  /apis/order/subOrder/{subOrderId}:
+    parameters:
+      - $ref: '#/components/parameters/subOrderIdParam'
+    get:
+      tags: 
+        - 子订单相关
+      summary: 获取指定子订单信息
+      description: 获取指定子订单信息
+      responses:
+        200:
+          description: 成功获取并返回指定子订单信息
+          content:
+            application/json:
+              schema:
+                properties:
+                  code:
+                    type: integer
+                  data:
+                    type: object
+                    properties:
+                      order:
+                        $ref: '#/components/schemas/subOrder_view'
+                      msg:
+                        type: string
+                        example: "successful"
+    post:
+      tags: 
+        - 子订单相关
+      description: 编辑指定子订单信息，只修改已填写字段
+      summary: 编辑指定子订单
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                mainOrderId:
+                  type: string
+                  description: 与该子订单对应的母订单id
+                price:
+                  title: 单件货物价格
+                  type: integer
+                  example : 534
+                quantity:
+                  title: 子订单所能提供货物数量
+                  type: integer
+                  example : 3
+                comments :
+                  description: 订单备注
+                  type: string
+                  example: 空备注
+                phone :
+                  description: 联系方式
+                  type: string
+                  example: 13538383838
+      responses:
+        200:
+          $ref: '#/components/responses/GeneralResponse'
+  /apis/order/subOrder/{subOrderId}/finish:
+    parameters:
+      - $ref: '#/components/parameters/subOrderIdParam'
+    post:
+      tags: 
+        - 子订单相关
+      summary: 完成指定子订单
+      description: 讲该子订单的状态修改为完成状态
+      responses:
+        200:
+          $ref: '#/components/responses/GeneralResponse'
+
+  /apis/order/subOrder/{subOrderId}/cancel:
+    parameters:
+      - $ref: '#/components/parameters/subOrderIdParam'
+    post:
+      tags: 
+        - 子订单相关
+      summary: 取消指定子订单
+      description: 讲该子订单的状态修改为取消状态
+      responses:
+        200:
+          $ref: '#/components/responses/GeneralResponse'
+
+  /wallet/{userId}:
+    parameters:
+      - $ref: '#/components/parameters/userIdParam'
+    get:
+      tags:
+        - 个人钱包
+      description: 获取指定用户钱包余额
+      summary: 获取指定用户钱包余额
+      responses:
+        200:
           description: Successful response
           content:
             application/json:
@@ -148,14 +341,55 @@ paths:
                   data:
                     type: object
                     properties:
+                      balance:
+                        title: 指定用户的余额
+                        type: integer
+                        example: 89238
                       msg:
                         type: string
                         example: "已提交成功"
-                      id:
-                        type: integer
-                        example: 89238
+                        
+  /wallet/{userId}/deposit:
+    parameters:
+      - $ref: '#/components/parameters/userIdParam'
+    post:
+      tags:
+        - 个人钱包
+      summary : 充值接口
+      description: 充值接口
+      requestBody: 
+        content:
+          application/json:
+            schema:
+              properties:
+                amount:
+                  description: 充值金额
+                  type: number
+                  example: 34234
+      responses:
+        200:
+          $ref: '#/components/responses/GeneralResponse'
+  /wallet/{userId}/withdraw:
+    parameters:
+      - $ref: '#/components/parameters/userIdParam'
+    post:
+      tags:
+        - 个人钱包
+      summary : 提现接口
+      description: 提现接口
+      requestBody: 
+        content:
+          application/json:
+            schema:
+              properties:
+                amount:
+                  description: 提现金额
+                  type: number
+                  example: 34234
+      responses:
+        200:
+          $ref: '#/components/responses/GeneralResponse'
 
-                  
 components:
   schemas:
     Users:
@@ -277,13 +511,99 @@ components:
             - 0
             - 1
             - 2
+    mainOrder_view:
+      type: object
+      properties:
+        mainOrderId:
+          type: string
+          description: 母订单id
+        order_name:
+          type: string
+          description: 母订单标题
+        create_date:
+          type: string
+          format: datetime
+          description: 母订单创建日期
+          example: "2018-01-02 11:11:11"
+        order_ddl:
+          type: string
+          description: 母订单截止日期
+          example: "2018-01-09 11:11:11"
+        quantity:
+          title: 母订单所需货物数量
+          type: integer
+          example : 3
+        price:
+          title: 单件货物价格
+          type: integer
+          example : 534
+        total_price:
+          title: 订单总价格
+          type: integer
+          example: 243423
+        userID:
+          title: 下达该订单的用户id
+          type: integer
+          format: int64
+        order_status:
+          title: 订单状态(TODO)
+          type: integer
+          enum:
+            - 0
+            - 1
+            - 2
+        order_progress:
+          title: 订单进度
+          type: integer
+          maximum: 100
+          minimum   : 0
+    subOrder_view:
+      type: object
+      properties:
+        subOrderId:
+          type: string
+          description: 子订单id
+        mainOrderId:
+          type: string
+          description: 与该子订单对应的母订单id
+        create_date:
+          type: string
+          format: datetime
+          description: 子订单创建日期时间
+          example: "2018-01-02 11:11:11"
+        quantity:
+          title: 子订单所能提供货物数量
+          type: integer
+          example : 3
+        price:
+          title: 单件货物价格
+          type: integer
+          example : 534
+        total_price:
+          title: 订单总价格
+          type: integer
+          example: 243423
+        comments:
+          title: 订单备注
+          type: string
+        userID:
+          title: 下达该订单的用户id
+          type: integer
+          format: int64
+        order_status:
+          title: 订单状态(TODO)
+          type: integer
+          enum:
+            - 0
+            - 1
+            - 2
         
   parameters:
     skipParam:
       name: skip
       in: query
       description: number of items to skip
-      required: true
+      # required: true
       schema:
         type: integer
         format: int32
@@ -291,29 +611,72 @@ components:
       name: limit
       in: query
       description: max records to return
-      required: true
+      # required: true
       schema:
         type: integer
         format: int32
+    mainOrderIdParam:
+      name : mainOrderId
+      description: 母订单在数据库中的id
+      in : path
+      required : true
+      schema:
+        title: 订单id
+        type: integer
+    subOrderIdParam:
+      name : subOrderId
+      description: 子订单在数据库中的id
+      in : path
+      required : true
+      schema:
+        title: 订单id
+        type: integer
+    userIdParam:
+      name : userId
+      description: 用户在数据库中的id
+      in : path
+      required : true
+      schema:
+        title: 用户id
+        type: integer
   responses:
-    NotFound:
-      description: Entity not found.
-    IllegalInput:
-      description: Illegal input for operation.
-    GeneralError:
-      description: General Error
+    GeneralResponseWithId:
+      description: General response
       content:
         application/json:
           schema:
-            title: Sample
-            type: object
             properties:
-              test1:
-                type: string
-                description: test1 description
-              test2:
+              code:
                 type: integer
-                description: test2 description
+                description: 错误码，0为正常
+                example: 0
+              data:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: "已提交成功"
+                  id:
+                    title: 所提交订单在数据库中的id
+                    type: integer
+                    example: 89238
+    GeneralResponse:
+      description: General response
+      content:
+        application/json:
+          schema:
+            properties:
+              code:
+                type: integer
+                description: 错误码，0为正常
+                example: 0
+              data:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: "已提交/操作成功"
+
   securitySchemes:
     api_key:
       type: apiKey
