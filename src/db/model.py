@@ -30,42 +30,46 @@ class Orders(db.Model):
     __tablename__ = 'Orders'
     ID = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.Text)
+    summary = db.Column(db.Text)
     createdate = db.Column(db.Date)
     deadline = db.Column(db.Date)
     address = db.Column(db.Text)
-    amount = db.Column(db.Integer)
+    quantity = db.Column(db.Integer)
     price = db.Column(db.Float)
     totalprice = db.Column(db.Float)
     createuser = db.Column(db.Integer)
     comments = db.Column(db.Text)
-    contect = db.Column(db.Text)
+    phone = db.Column(db.Text)
     status = db.Column(db.Integer)
     progress = db.Column(db.Integer)
-    def __init__(self, name, createdate, deadline, address, amount, price, createuser, comments, contect):
+    def __init__(self, name, summary, createdate, deadline, address, quantity, price, totalprice, createuser, comments, phone, status, progress):
         self.name = name
+        self.summary = summary
         self.createdate = createdate
         self.deadline = deadline
         self.address = address
-        self.amount = amount
+        self.quantity = quantity
         self.price = price
-        self.totalprice = price * amount
+        self.totalprice = price * quantity
         self.createuser = createuser
         self.comments = comments
-        self.contect = contect
-        self.status = 0
-        self.progress = 0
+        self.phone = phone
+        self.status = status
+        self.progress = progress
     def to_json(self):
         return {
+            "id" : self.ID,
             "name" : self.name,
+            "summary" : self.summary,
             "createdate" : self.createdate,
             "deadline" : self.deadline,
             "address" : self.address,
-            "amount" : self.amount,
+            "quantity" : self.quantity,
             "price" : self.price,
             "totalprice" : self.totalprice,
             "createuser" : self.createuser,
             "comments" : self.comments,
-            "contect" : self.contect,
+            "phone" : self.phone,
             "status" : self.status,
             "progress" : self.progress,
         }
@@ -93,6 +97,6 @@ class subOrders(db.Model):
         self.contect = contect
         self.status = 0
 
-# db.create_all()
+db.create_all()
 
 
