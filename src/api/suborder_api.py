@@ -1,11 +1,9 @@
-from src.db.model import db, Orders
+from src.db.model import db, subOrders
 import datetime
 import traceback
 import sys
 
-
-
-def get_main_orders(skip, limit):
+def get_sub_orders(skip, limit):
     """
     获得订单列表
 
@@ -26,7 +24,7 @@ def get_main_orders(skip, limit):
         limit = 100
     else:
         limit = int(limit)
-    res_query_results = Orders.query.all()
+    res_query_results = subOrders.query.all()
     res_orders = []
     for i in res_query_results[skip:skip+limit]:
         res_orders.append(i.to_json())
@@ -39,7 +37,7 @@ def get_main_orders(skip, limit):
     }
     return res
 
-def add_new_main_order(json_body):
+def add_new_sub_order(json_body):
     """
     传入一个post的body部分（已转换为json），生成一个新的订单，并在数据库中增加新的一行。
 
@@ -51,33 +49,21 @@ def add_new_main_order(json_body):
         返回响应请求 res
     """
     # default order
-    order_name = json_body['order_name']
-    order_summary = json_body['order_summary']
+    mainOrderId = int(json_body['mainOrderId'])
     createdate = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    deadline = json_body['order_ddl']
-    address = json_body['address']
     quantity = int(json_body['quantity'])
-    price = int(json_body['price'])
-    totalprice = quantity*price
-    createuser = json_body['createuser']
+    createuser = int(json_body['createuser'])
     comments = json_body['comments']
     phone = json_body['phone']
     status = 1
-    progress = 0
-    this_order = Orders(
-        order_name,
-        order_summary,
+    this_order = subOrders(
+        mainOrderId,
         createdate,
-        deadline,
-        address,
         quantity,
-        price,
-        totalprice,
         createuser,
         comments,
         phone,
-        status,
-        progress
+        status
     )
     db.session.add(this_order)
     db.session.commit()
@@ -92,17 +78,19 @@ def add_new_main_order(json_body):
     }
     return res
 
-def get_main_order_with_id(mainOrderId):
+
+
+def get_sub_order_with_id(subOrderId):
     """
     获得订单列表
 
     Parameters:
-        mainOrderId: int
+        subOrderId: int
     Returns:
         返回dict类型的一个订单
         返回响应请求 res
     """
-    res_query_result = Orders.query.filter_by(ID=mainOrderId).first()
+    res_query_result = subOrders.query.get(subOrderId)
     if res_query_result is None:
         data_res = {
             "msg" : "该订单不存在"
@@ -121,25 +109,20 @@ def get_main_order_with_id(mainOrderId):
     return res
 
 
-def post_main_order_with_id(mainOrderId, json_body):
+def post_sub_order_with_id(subOrderId, json_body):
     """
     修改指定订单
 
     Parameters:
-        mainOrderId : int
+        subOrderId : int
         json_body : json对象 or dict
             包含订单所需的信息
     Returns:
         返回响应请求 res
     """
-    res_query_result = Orders.query.get(mainOrderId)
+    res_query_result = subOrders.query.get(subOrderId)
     # 修改指定订单信息
-    res_query_result.order_name = json_body['order_name']
-    res_query_result.order_summary = json_body['order_summary']
-    res_query_result.order_ddl = json_body['order_ddl']
-    res_query_result.address = json_body['address']
     res_query_result.quantity = json_body['quantity']
-    res_query_result.price = json_body['price']
     res_query_result.comments = json_body['comments']
     res_query_result.phone = json_body['phone']
     db.session.commit()
@@ -159,19 +142,20 @@ def post_main_order_with_id(mainOrderId, json_body):
     }
     return res
 
-def post_finish_mainOrder_with_id(mainOrderId):
+
+def post_finish_subOrder_with_id(subOrderId):
     """
-    尝试将mainOrderId对应的母订单设置为完成状态。
+    尝试将subOrderId对应的母订单设置为完成状态。
     1 ： 正在进行中
     2 ： 已取消
     3 ： 已完成
 
     Parameters:
-        mainOrderId : int
+        subOrderId : int
     Returns:
         res: 返回json响应
     """
-    res_query_result = Orders.query.get(mainOrderId)
+    res_query_result = subOrders.query.get(subOrderId)
     # 修改指定订单信息
     res_query_result.status = 3
     db.session.commit()
@@ -191,20 +175,20 @@ def post_finish_mainOrder_with_id(mainOrderId):
     }
     return res  
 
-def post_cancel_mainOrder_with_id(mainOrderId):
+def post_cancel_subOrder_with_id(subOrderId):
     """
-    尝试将mainOrderId对应的母订单设置为完成状态。
+    尝试将subOrderId对应的母订单设置为完成状态。
     1 ： 正在进行中
-
+    
     3 ： 已完成
     4 ： 已取消
 
     Parameters:
-        mainOrderId : int
+        subOrderId : int
     Returns:
         res: 返回json响应
     """
-    res_query_result = Orders.query.get(mainOrderId)
+    res_query_result = subOrders.query.get(subOrderId)
     # 修改指定订单信息
     res_query_result.status = 4
     db.session.commit()

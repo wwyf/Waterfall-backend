@@ -77,25 +77,38 @@ class Orders(db.Model):
 class subOrders(db.Model):
     __tablename__ = 'subOrders'
     ID = db.Column(db.Integer, primary_key=True)
-    createdate = db.Column(db.Date)
+    # TODO: 需要弄成外键的形式吗
     mainorder = db.Column(db.Integer)
-    supplier = db.Column(db.Integer)
-    amount = db.Column(db.Integer)
-    price = db.Column(db.Float)
-    totalprice = db.Column(db.Float)
+    createdate = db.Column(db.DateTime)
+    # TODO: 需要弄成外键的形式吗
+    createuser = db.Column(db.Integer)
+    quantity = db.Column(db.Integer)
+    # price = db.Column(db.Float)
+    # totalprice = db.Column(db.Float)
     comments = db.Column(db.Text)
-    contect = db.Column(db.Text)
+    phone = db.Column(db.Text)
     status = db.Column(db.Integer)
-    def __init__(self, createdate, mainorder, supplier, amount, price, totalprice, comments, contect, status):
-        self.createdate = createdate
+    def __init__(self, mainorder, createdate, createuser, quantity,  comments, phone, status):
         self.mainorder = mainorder
-        self.supplier = supplier
-        self.amount = amount
-        self.price = price
-        self.totalprice = price * amount
+        self.createdate = createdate
+        self.createuser = createuser
+        self.quantity = quantity
+        # self.price = price
+        # self.totalprice = price * quantity
         self.comments = comments
-        self.contect = contect
+        self.phone = phone
         self.status = 0
+    def to_json(self):
+        return {
+            "id" : self.ID,
+            "mainorder" : self.mainorder,
+            "createdate" : self.createdate,
+            "createuser" : self.createuser,
+            "quantity" : self.quantity,
+            "comments" : self.comments,
+            "phone" : self.phone,
+            "status" : self.status
+        }
 
 db.create_all()
 
