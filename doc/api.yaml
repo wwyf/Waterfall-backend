@@ -49,15 +49,15 @@ paths:
           application/json:
             schema:
               properties:
-                order_name: 
+                name: 
                   description: 订单名称
                   type: string
                   example: 鲜天下实例订单名称
-                order_summary :
+                summary :
                   description: 订单概述
                   type: string
                   example: 鲜天下示例订单概述，我司需要大批量的i7-9900K。
-                order_ddl:
+                deadline:
                   description : 订单截止日期
                   type: string
                   format: datatime
@@ -74,6 +74,10 @@ paths:
                   description: 订单单价
                   type: integer
                   example: 100
+                createuser:
+                  description: 当前用户的id
+                  type: integer
+                  example: 1
                 comments :
                   description: 订单备注
                   type: string
@@ -122,15 +126,15 @@ paths:
           application/json:
             schema:
               properties:
-                order_name: 
+                name: 
                   description: 订单名称
                   type: string
                   example: 鲜天下实例订单名称
-                order_summary :
+                summary :
                   description: 订单概述
                   type: string
                   example: 鲜天下示例订单概述，我司需要大批量的i7-9900K。
-                order_ddl:
+                deadline:
                   description : 订单截止日期
                   type: string
                   format: datatime
@@ -216,16 +220,18 @@ paths:
             schema:
               properties:
                 mainOrderId:
-                  type: string
-                  description: 与该子订单对应的母订单id
-                price:
-                  title: 单件货物价格
                   type: integer
-                  example : 534
+                  description: 与该子订单对应的母订单id
+                  example: 1
                 quantity:
                   title: 子订单所能提供货物数量
                   type: integer
                   example : 3
+                createuser:
+                  title: 提供该子订单的用户id
+                  type: integer
+                  format: int64
+                  example: 8
                 comments :
                   description: 订单备注
                   type: string
@@ -273,13 +279,6 @@ paths:
           application/json:
             schema:
               properties:
-                mainOrderId:
-                  type: string
-                  description: 与该子订单对应的母订单id
-                price:
-                  title: 单件货物价格
-                  type: integer
-                  example : 534
                 quantity:
                   title: 子订单所能提供货物数量
                   type: integer
@@ -434,6 +433,9 @@ components:
         name:
           title: 订单名称
           type: string
+        summary:
+          title: 订单概要/描述
+          type: string    
         createdate:
           title: 订单创建日期时间
           type: string
@@ -443,9 +445,9 @@ components:
           type: string
           format: datetime
         address:
-          title: 订单收获地址
+          title: 订单收货地址
           type: string
-        amount:
+        quantity:
           title: 订单货物数量
           type: integer
         price:
@@ -461,7 +463,7 @@ components:
         comments:
           title: 订单备注
           type: string
-        contect:
+        phone:
           title: 联系方式（即手机号码）
           type: string
         status:
@@ -479,33 +481,30 @@ components:
     subOrders:
       properties:
         ID:
-          title : 在数据库中子订单的唯一ID
+          description: 在数据库中子订单的唯一ID
           type: integer
           format : int64
+        mainOrderId:
+          type: integer
+          description: 与该子订单对应的母订单id
         createdate:
-          title: 订单创建日期时间
+          description: 订单创建日期时间
           type: string
           format: datetime
         supplier:
-          title: 该子订单供应商的id
+          description: 该子订单供应商的id
           type: string
-        amount:
-          title: 订单货物数量
-          type: integer
-        price:
-          title: 单件货物数量
-          type: integer
-        totalprice:
-          title: 订单总价格
+        quantity:
+          description: 订单货物数量
           type: integer
         comments:
-          title: 订单备注
+          description: 订单备注
           type: string
-        contect:
-          title: 联系方式（即手机号码）
+        phone:
+          description: 联系方式（即手机号码）
           type: string
         status:
-          title: 订单状态(TODO)
+          description: 订单状态(TODO)
           type: integer
           enum:
             - 0
@@ -514,89 +513,102 @@ components:
     mainOrder_view:
       type: object
       properties:
-        mainOrderId:
+        address:
+          title: 订单收货地址
           type: string
-          description: 母订单id
-        order_name:
+        comments:
+          description: 订单备注
           type: string
-          description: 母订单标题
-        create_date:
+        createdate:
+          description: 订单创建日期时间
           type: string
           format: datetime
-          description: 母订单创建日期
-          example: "2018-01-02 11:11:11"
-        order_ddl:
-          type: string
-          description: 母订单截止日期
-          example: "2018-01-09 11:11:11"
-        quantity:
-          title: 母订单所需货物数量
-          type: integer
-          example : 3
-        price:
-          title: 单件货物价格
-          type: integer
-          example : 534
-        total_price:
-          title: 订单总价格
-          type: integer
-          example: 243423
-        userID:
-          title: 下达该订单的用户id
+        createuser:
+          description: 下达该订单的用户id
           type: integer
           format: int64
-        order_status:
-          title: 订单状态(TODO)
+        deadline:
+          type: string
+          format: datetime
+          description: 母订单截止日期
+          example: "2018-01-09 11:11:11"
+        id:
+          type: string
+          description: 母订单id
+        name:
+          type: string
+          description: 母订单标题
+        phone:
+          description: 联系方式（即手机号码）
+          type: string
+        price:
+          description: 单件货物价格
+          type: integer
+          example : 534
+        progress:
+          title: 订单进度
+          type: integer
+          maximum: 100
+          minimum   : 0
+        quantity:
+          description: 母订单所需货物数量
+          type: integer
+          example : 3
+        status:
+          description: 订单状态(TODO)
           type: integer
           enum:
             - 0
             - 1
             - 2
-        order_progress:
-          title: 订单进度
+        summary:
+          type: string
+          description: 母订单概要
+        totalprice:
+          description: 订单总价格
           type: integer
-          maximum: 100
-          minimum   : 0
+          example: 243423
+
+
     subOrder_view:
       type: object
       properties:
-        subOrderId:
+        comments:
+          description: 订单备注
+          type: string
+        createdate:
+          type: string
+          format: datetime
+          description: 子订单创建日期时间
+          example: "2018-01-02 11:11:11"
+        createuser:
+          description: 下达该子订单的用户id，也就是该子订单对应微供应商
+          type: integer
+          format: int64
+        id:
           type: string
           description: 子订单id
         mainOrderId:
           type: string
           description: 与该子订单对应的母订单id
-        create_date:
+        phone:
+          description: 联系方式（即手机号码）
           type: string
-          format: datetime
-          description: 子订单创建日期时间
-          example: "2018-01-02 11:11:11"
         quantity:
-          title: 子订单所能提供货物数量
+          description: 子订单所能提供货物数量
           type: integer
           example : 3
-        price:
-          title: 单件货物价格
-          type: integer
-          example : 534
-        total_price:
-          title: 订单总价格
-          type: integer
-          example: 243423
-        comments:
-          title: 订单备注
-          type: string
-        userID:
-          title: 下达该订单的用户id
-          type: integer
-          format: int64
-        order_status:
-          title: 订单状态(TODO)
+
+        status:
+          description: 订单状态(1：正在进行中 3：已完成 4：已取消)
           type: integer
           enum:
             - 0
             - 1
             - 2
+            - 3
+            - 4
+
         
   parameters:
     skipParam:
@@ -654,10 +666,11 @@ components:
                 type: object
                 properties:
                   msg:
+                    description: 提交相关信息
                     type: string
                     example: "已提交成功"
                   id:
-                    title: 所提交订单在数据库中的id
+                    description: 所提交订单在数据库中的id
                     type: integer
                     example: 89238
     GeneralResponse:

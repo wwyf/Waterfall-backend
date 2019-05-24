@@ -51,10 +51,10 @@ def add_new_main_order(json_body):
         返回响应请求 res
     """
     # default order
-    order_name = json_body['order_name']
-    order_summary = json_body['order_summary']
+    order_name = json_body['name']
+    order_summary = json_body['summary']
     createdate = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    deadline = json_body['order_ddl']
+    deadline = json_body['deadline']
     address = json_body['address']
     quantity = int(json_body['quantity'])
     price = int(json_body['price'])
@@ -134,9 +134,9 @@ def post_main_order_with_id(mainOrderId, json_body):
     """
     res_query_result = Orders.query.get(mainOrderId)
     # 修改指定订单信息
-    res_query_result.order_name = json_body['order_name']
-    res_query_result.order_summary = json_body['order_summary']
-    res_query_result.order_ddl = json_body['order_ddl']
+    res_query_result.order_name = json_body['name']
+    res_query_result.order_summary = json_body['summary']
+    res_query_result.order_ddl = json_body['deadline']
     res_query_result.address = json_body['address']
     res_query_result.quantity = json_body['quantity']
     res_query_result.price = json_body['price']

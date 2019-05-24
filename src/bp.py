@@ -15,6 +15,9 @@ from src.api import (
 order_bp = Blueprint('order', __name__, url_prefix='/apis/order')
 CORS(order_bp)
 
+wallet_bp = Blueprint('wallet', __name__, url_prefix='/apis/wallet')
+CORS(wallet_bp)
+
 @order_bp.route('/mainOrder', methods=('GET', 'POST'))
 def solve_mainOrder():
     if request.method == 'GET':
