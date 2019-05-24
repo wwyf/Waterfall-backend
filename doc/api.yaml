@@ -5,7 +5,7 @@ info:
 servers:
   - url: http://localhost:5000
     description: Test server
-  - url: http://waterfall.wwyf.top
+  - url: https://waterfall.wwyf.top
     description: Production server
 paths:
   # /apis:
