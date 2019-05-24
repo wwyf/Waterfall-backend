@@ -8,12 +8,7 @@ import sys
 
 
 from src.db.model import db, Orders
-from src.solver.order import (
-    get_main_orders,
-    add_new_main_order,
-    get_main_order_with_id,
-    post_main_order_with_id
-)
+from src.solver import order_solver
 
 bp = Blueprint('order', __name__, url_prefix='/apis')
 CORS(bp)
@@ -23,21 +18,32 @@ def solve_mainOrder():
     if request.method == 'GET':
         skip = request.args.get('skip')
         limit = request.args.get('limit')
-        res = get_main_orders(skip, limit)
+        res = order_solver.get_main_orders(skip, limit)
         return jsonify(res)
     elif request.method == 'POST':
         json_body = json.loads(request.data)
-        res = add_new_main_order(json_body)
+        res = order_solver.add_new_main_order(json_body)
         return jsonify(res)
 
 @bp.route('/order/mainOrder/<int:mainOrderId>', methods=('GET', 'POST'))
 def solve_mainOrder_with_id(mainOrderId):
     if request.method == 'GET':
-        res = get_main_order_with_id(mainOrderId)
+        res = order_solver.get_main_order_with_id(mainOrderId)
         return jsonify(res)
     
     elif request.method == 'POST':
         json_body = json.loads(request.data)
-        res = post_main_order_with_id(mainOrderId, json_body)
+        res = order_solver.post_main_order_with_id(mainOrderId, json_body)
         return jsonify(res)
-        
+
+@bp.route('/order/mainOrder/<int:mainOrderId>/finish', methods=('GET', 'POST'))
+def solve_finish_mainOrder_with_id(mainOrderId):
+    if request.method == 'POST':
+        res = order_solver.post_finish_mainOrder_with_id(mainOrderId)
+        return jsonify(res)
+
+@bp.route('/order/mainOrder/<int:mainOrderId>/cancel', methods=('GET', 'POST'))
+def solve_cancel_mainOrder_with_id(mainOrderId):
+    if request.method == 'POST':
+        res = order_solver.post_cancel_mainOrder_with_id(mainOrderId)
+        return jsonify(res)

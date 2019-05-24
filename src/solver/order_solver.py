@@ -158,3 +158,68 @@ def post_main_order_with_id(mainOrderId, json_body):
         'data' : data_res
     }
     return res
+
+def post_finish_mainOrder_with_id(mainOrderId):
+    """
+    尝试将mainOrderId对应的母订单设置为完成状态。
+    1 ： 正在进行中
+    2 ： 已取消
+    3 ： 已完成
+
+    Parameters:
+        mainOrderId : int
+    Returns:
+        res: 返回json响应
+    """
+    res_query_result = Orders.query.get(mainOrderId)
+    # 修改指定订单信息
+    res_query_result.status = 3
+    db.session.commit()
+    if res_query_result is None:
+        msg = "该订单不存在"
+        code = 1
+    else:
+        msg = "成功完成"
+        code = 0
+    # 构造res
+    data_res = {
+        "msg" : msg
+    }
+    res = {
+        'code' : code,
+        'data' : data_res
+    }
+    return res  
+
+def post_cancel_mainOrder_with_id(mainOrderId):
+    """
+    尝试将mainOrderId对应的母订单设置为完成状态。
+    1 ： 正在进行中
+
+    3 ： 已完成
+    4 ： 已取消
+
+    Parameters:
+        mainOrderId : int
+    Returns:
+        res: 返回json响应
+    """
+    res_query_result = Orders.query.get(mainOrderId)
+    # 修改指定订单信息
+    res_query_result.status = 4
+    db.session.commit()
+    if res_query_result is None:
+        msg = "该订单不存在"
+        code = 1
+    else:
+        msg = "成功完成"
+        code = 0
+    # 构造res
+    data_res = {
+        "msg" : msg
+    }
+    res = {
+        'code' : code,
+        'data' : data_res
+    }
+    return res  
