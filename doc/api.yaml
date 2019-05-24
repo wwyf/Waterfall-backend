@@ -417,7 +417,7 @@ components:
           format: int64
           default: 0
         usertype:
-          title: 用户类型（0为管理员，1为订购商，2为微供应商）
+          title: 订单状态(1：正在进行中 3：已完成 4：已取消)
           type: integer
           enum:
             - 0
@@ -504,7 +504,7 @@ components:
           description: 联系方式（即手机号码）
           type: string
         status:
-          description: 订单状态(TODO)
+          description: 订单状态(1：正在进行中 3：已完成 4：已取消)
           type: integer
           enum:
             - 0
@@ -555,7 +555,7 @@ components:
           type: integer
           example : 3
         status:
-          description: 订单状态(TODO)
+          description: 订单状态(1：正在进行中 3：已完成 4：已取消)
           type: integer
           enum:
             - 0
