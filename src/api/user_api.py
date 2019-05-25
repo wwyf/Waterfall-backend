@@ -1,4 +1,4 @@
-from flask import Flask, render_template, session, request, redirect
+from flask import Flask, render_template, session, request, redirect, jsonify
 from src.db.model import db, Users
 from functools import wraps
 import json
@@ -13,12 +13,19 @@ def permission_check(roles):
                 if session['role'] in roles:
                     return func(*args, **kwargs)
                 else:
-                    return json.dumps({
-                        "ret" : 1,
-                        "data" : "您没有权限使用该接口"
+                    return jsonify({
+                        "code" : 1,
+                        "data" : {
+                            "msg" : "您没有权限使用该接口"
+                        }
                     })
             else:
-                return redirect('/login')
+                return jsonify({
+                    "code" : 1,
+                    "data" : {
+                        "msg" : "请先登录"
+                    }
+                })
         return inner_wrapper
     return wrapper
 
@@ -70,6 +77,9 @@ def login_check(json_body):
         }
 
 def add_user(username, password, email, phone, usertype, userstatus):
+    if usertype == 'manager':
+        if not (session.get('role') and session['role'] == 'manager'):
+            return False
     new_user = Users(
         username=username,
         password=password,
@@ -84,14 +94,6 @@ def add_user(username, password, email, phone, usertype, userstatus):
     return True
 
 def do_register(json_body):
-    if json_body['role'] == 'manager':
-        if not (session.get('role') and session['role'] == 'manager'):
-            return {
-                "code" : 1,
-                "data" : {
-                    "msg" : "没有权限"
-                }
-            }
     find_user = Users.query.filter_by(username=json_body['username']).first()
     if not find_user is None:
         return {
@@ -100,7 +102,7 @@ def do_register(json_body):
                 "msg" : "用户已存在"
             }
         }
-    add_user(
+    finished = add_user(
         json_body['username'], 
         json_body['password'], 
         json_body['email'], 
@@ -108,9 +110,68 @@ def do_register(json_body):
         json_body['role'],
         1
     )
+    if not finished:
+        return {
+            "code" : 1,
+            "data" : {
+                "msg" : "没有权限"
+            }
+        }
+    else:
+        return {
+            "code" : 0,
+            "data" : {
+                "msg" : "注册成功"
+            }
+        }
+
+def do_logout():
+    session.clear()
     return {
         "code" : 0,
         "data" : {
-            "msg" : "注册成功"
+            "msg" : "登出成功"
+        }
+    }
+
+def get_user_info(userid):
+    target_user = Users.query.filter_by(ID=userid).first()
+    if target_user is None:
+        return {
+            "code" : 1,
+            "data" : {
+                "msg" : "用户不存在"
+            }
+        }
+    res = target_user.to_json()
+    res.pop("password")
+    return {
+        "code" : 0,
+        "data" : res
+    }
+
+def edit_user_info(userid, json_body):
+    target_user = Users.query.filter_by(ID=userid).first()
+    if session['role'] != 'manager' and target_user.username != session["username"]:
+        return {
+            "code" : 1,
+            "data" : {
+                "msg" : "没有权限"
+            }
+        }
+    if "password" in json_body:
+        target_user.password = json_body["password"]
+    if "email" in json_body:
+        target_user.email = json_body["email"]
+    if "phone" in json_body:
+        target_user.phone = json_body["phone"]
+    if "role" in json_body and session['role'] == 'manager':
+        target_user.usertype = json_body["role"]
+    if "status" in json_body and session['role'] == 'manager':
+        target_user.userstatus = json_body["status"]
+    return {
+        "code" : 0,
+        "data" : {
+            "msg" : "修改成功"
         }
     }

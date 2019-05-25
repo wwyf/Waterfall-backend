@@ -25,6 +25,17 @@ class Users(db.Model):
         self.usertype = usertype
         self.balance = 0.0
         self.userstatus = userstatus
+    def to_json(self):
+        return {
+            "id" : self.ID,
+            "username" : self.username,
+            "password" : self.password,
+            "email" : self.email,
+            "phone" : self.phone,
+            "balance" : self.balance,
+            "role" : self.usertype,
+            "status" : self.userstatus
+        }
 
 class Orders(db.Model):
     __tablename__ = 'Orders'
