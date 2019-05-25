@@ -15,16 +15,16 @@ class Users(db.Model):
     email = db.Column(db.Text)
     phone = db.Column(db.Text)
     balance = db.Column(db.Float, default=0)
-    usertype = db.Column(db.Integer)
+    usertype = db.Column(db.Text)
     userstatus = db.Column(db.Integer)
-    def __init__(self, username, password, email, phone, usertype):
+    def __init__(self, username, password, email, phone, usertype, userstatus):
         self.username = username
         self.password = password
         self.email = email
         self.phone = phone
         self.usertype = usertype
         self.balance = 0.0
-        self.userstatus = 0
+        self.userstatus = userstatus
 
 class Orders(db.Model):
     __tablename__ = 'Orders'

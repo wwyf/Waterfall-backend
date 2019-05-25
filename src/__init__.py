@@ -32,6 +32,7 @@ app.config['SQLALCHEMY_COMMIT_ON_TEARDOWN'] = True
 
 # apply the blueprints to the app
 from src import bp
+app.register_blueprint(bp.user_bp)
 app.register_blueprint(bp.order_bp)
 app.register_blueprint(bp.wallet_bp)
 
