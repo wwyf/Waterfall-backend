@@ -2,11 +2,11 @@
 
 ![](https://travis-ci.org/wwyf/Waterfall-backend.svg?branch=master)
 
-## envinment
+## Envinment
 
-**python3.6**
+`python=3.6`
 
-## Get start
+## Start in debug mode
 
 ```
 git clone git@github.com:wwyf/Waterfall-backend.git
