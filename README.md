@@ -24,7 +24,7 @@ pip install -r requirements.txt
 Finally you can run Waterfall-backend in debug mode.
 ```
 export FLASK_APP=src
-export FLASK_ENV=development # tuen on debug mode and other dev features
+export FLASK_ENV=development # turn on debug mode and other dev features
 flask run
 ```
 
