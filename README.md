@@ -29,3 +29,20 @@ flask run
 ```
 
 Backend will run on http://localhost:5000.
+
+## Docker
+
+### Build and Run
+
+
+```
+git clone git@github.com:wwyf/Waterfall-backend.git
+cd Waterfall-backend
+```
+
+build your image.
+
+```
+docker build -t waterfall-backend .
+docker run  -d waterfall-backend
+```
