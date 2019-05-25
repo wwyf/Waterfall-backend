@@ -108,3 +108,20 @@ def user_register():
         json_body = json.loads(request.data.decode('utf-8'))
         res = user_api.do_register(json_body)
         return jsonify(res)
+
+@user_bp.route('/logout', methods=['GET'])
+def user_logout():
+    if request.method == 'GET':
+        res = user_api.do_logout()
+        return jsonify(res)
+
+@user_bp.route('/<int:userId>', methods=['GET', 'POST'])
+@user_api.permission_check(roles=['supplier', 'purchaser', 'manager'])
+def user_info(userId):
+    if request.method == 'GET':
+        res = user_api.get_user_info(userId)
+        return jsonify(res)
+    if request.method == 'POST':
+        json_body = json.loads(request.data.decode('utf-8'))
+        res = user_api.edit_user_info(userId ,json_body)
+        return jsonify(res)
