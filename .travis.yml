@@ -3,4 +3,4 @@ install:
   - pip3 install -r requirements.txt
   
 script: 
-  - cd tests && py.test
+  - cd tests && chmod +x test.sh && test.sh
