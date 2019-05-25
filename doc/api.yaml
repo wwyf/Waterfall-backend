@@ -98,7 +98,7 @@ paths:
       tags: 
         - 母订单相关
       summary: 获取指定母订单信息
-      description: 获取指定母订单信息
+      description: 获取id为mainOrderId的指定母订单信息
       responses:
         200:
           description: 成功获取并返回指定订单信息
@@ -119,8 +119,8 @@ paths:
     post:
       tags: 
         - 母订单相关
-      description: 编辑指定母订单信息，只修改已填写字段
       summary: 编辑指定母订单
+      description: 编辑指定母订单信息，使用填写字段覆盖已有字段
       requestBody:
         content:
           application/json:
@@ -169,7 +169,7 @@ paths:
       tags: 
         - 母订单相关
       summary: 完成指定订单
-      description: 讲该订单的状态修改为完成状态
+      description: 讲该订单的状态修改为完成状态（状态设置为3）
       responses:
         200:
           $ref: '#/components/responses/GeneralResponse'
@@ -181,7 +181,7 @@ paths:
       tags: 
         - 母订单相关
       summary: 取消指定订单
-      description: 讲该订单的状态修改为取消状态
+      description: 讲该订单的状态修改为取消状态（状态设置为4）
       responses:
         200:
           $ref: '#/components/responses/GeneralResponse'
@@ -214,6 +214,7 @@ paths:
       tags: 
         - 子订单相关
       summary: 提交新子订单
+      description: 在数据表中增加一条子订单（TODO:可能需要处理相应的母订单，增加相应的供应量）
       requestBody:
         content:
           application/json:
@@ -301,7 +302,7 @@ paths:
       tags: 
         - 子订单相关
       summary: 完成指定子订单
-      description: 讲该子订单的状态修改为完成状态
+      description: 讲该子订单的状态修改为完成状态（TODO:需要处理相应的母订单）
       responses:
         200:
           $ref: '#/components/responses/GeneralResponse'
@@ -325,7 +326,7 @@ paths:
       tags:
         - 个人钱包
       description: 获取指定用户钱包余额
-      summary: 获取指定用户钱包余额
+      summary: 获取指定用户钱包余额（TODO）
       responses:
         200:
           description: Successful response
@@ -354,7 +355,7 @@ paths:
     post:
       tags:
         - 个人钱包
-      summary : 充值接口
+      summary : 充值接口（TODO）
       description: 充值接口
       requestBody: 
         content:
@@ -374,7 +375,7 @@ paths:
     post:
       tags:
         - 个人钱包
-      summary : 提现接口
+      summary : 提现接口（TODO）
       description: 提现接口
       requestBody: 
         content:
