@@ -1,5 +1,5 @@
 from flask import (
-    Blueprint, flash, g, redirect, render_template, request, url_for,Flask, request, jsonify
+    Blueprint, flash, g, redirect, render_template, request, url_for,Flask, request, jsonify, session
 )
 from flask_cors import CORS
 from werkzeug.exceptions import abort
@@ -9,8 +9,12 @@ import sys
 from src.db.model import db, Orders
 from src.api import (
     mainorder_api,
-    suborder_api
+    suborder_api,
+    user_api
 )
+
+user_bp = Blueprint('user', __name__, url_prefix='/apis/user')
+CORS(user_bp)
 
 order_bp = Blueprint('order', __name__, url_prefix='/apis/order')
 CORS(order_bp)
@@ -86,4 +90,21 @@ def solve_finish_subOrder_with_id(subOrderId):
 def solve_cancel_subOrder_with_id(subOrderId):
     if request.method == 'POST':
         res = suborder_api.post_cancel_subOrder_with_id(subOrderId)
+        return jsonify(res)
+
+@user_bp.route('/login', methods=['GET', 'POST'])
+def user_login():
+    if request.method == 'GET':
+        res = user_api.login_status()
+        return jsonify(res)
+    elif request.method == 'POST':
+        json_body = json.loads(request.data.decode('utf-8'))
+        res = user_api.login_check(json_body)
+        return jsonify(res)
+
+@user_bp.route('/register', methods=['POST'])
+def user_register():
+    if request.method == 'POST':
+        json_body = json.loads(request.data.decode('utf-8'))
+        res = user_api.do_register(json_body)
         return jsonify(res)
