@@ -70,8 +70,8 @@ class Orders(db.Model):
             "createuser" : self.createuser,
             "comments" : self.comments,
             "phone" : self.phone,
-            "status" : self.status,
-            "progress" : self.progress,
+            "status" : self.status
+            # "progress" : self.progress,
         }
 
 class subOrders(db.Model):

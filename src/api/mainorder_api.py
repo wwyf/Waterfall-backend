@@ -1,9 +1,25 @@
-from src.db.model import db, Orders
+from src.db.model import db, Orders, subOrders
 import datetime
 import traceback
 import sys
 
+def get_main_order_supply(mainOrderId):
+    """
+    获得该母订单相关的所有子订单的供应量总和
 
+    Parameters:
+        mainOrderId: 母订单ID
+    Returns:
+        int: 子订单供应量总和
+    """
+    these_suborders = subOrders.query.filter_by(mainorder=mainOrderId)
+    current_supply = 0
+    if these_suborders is None:
+        return current_supply
+    else:
+        for i in these_suborders:
+            current_supply += i.quantity
+    return current_supply
 
 def get_main_orders(skip, limit):
     """
@@ -29,7 +45,10 @@ def get_main_orders(skip, limit):
     res_query_results = Orders.query.all()
     res_orders = []
     for i in res_query_results[skip:skip+limit]:
-        res_orders.append(i.to_json())
+        this_order = i.to_json()
+        this_order['current_supply'] = get_main_order_supply(i.ID)
+        res_orders.append(this_order)
+        
     data_res = {
         "orders" : res_orders
     }
@@ -102,15 +121,17 @@ def get_main_order_with_id(mainOrderId):
         返回dict类型的一个订单
         返回响应请求 res
     """
-    res_query_result = Orders.query.filter_by(ID=mainOrderId).first()
+    res_query_result = Orders.query.get(mainOrderId)
     if res_query_result is None:
         data_res = {
             "msg" : "该订单不存在"
         }
         code = 1
     else:
+        this_order = res_query_result.to_json()
+        this_order['current_supply'] = get_main_order_supply(res_query_result.ID)
         data_res = {
-            "order" : res_query_result.to_json(),
+            "order" : this_order,
             "msg" : "成功完成"
         }
         code = 0
