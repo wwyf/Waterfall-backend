@@ -84,7 +84,7 @@ def add_user(username, password, email, phone, usertype, userstatus):
     return True
 
 def do_register(json_body):
-    if json_body['usertype'] == 'manager':
+    if json_body['role'] == 'manager':
         if not (session.get('role') and session['role'] == 'manager'):
             return {
                 "code" : 1,
@@ -105,7 +105,7 @@ def do_register(json_body):
         json_body['password'], 
         json_body['email'], 
         json_body['phone'], 
-        json_body['usertype'],
+        json_body['role'],
         1
     )
     return {
