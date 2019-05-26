@@ -1,6 +1,7 @@
 flask
 pymysql
 pytest
+faker
 flask_restful
 Flask-Session
 Flask-SQLAlchemy
