@@ -19,19 +19,19 @@ from src.api.mainorder_api import *
 """
     @brief Test for get_main_order_supply()
 """
-param_get_main_order_supply_params = [
+param_get_main_order_supply = [
     (None, 0),
     ([subOrders(mainorder=0,
-                          createdate=datetime.datetime.utcnow(),
-                          createuser=0,
-                          quantity=1,
-                          comments="None",
-                          phone="88888888",
-                          status=0)], 1)
+              createdate=datetime.datetime.utcnow(),
+              createuser=0,
+              quantity=1,
+              comments="None",
+              phone="88888888",
+              status=0)], 1)
 ]
 
 
-@pytest.mark.parametrize('db_suborders, res', param_get_main_order_supply_params)
+@pytest.mark.parametrize('db_suborders, res', param_get_main_order_supply)
 def test_get_main_order_supply(db_suborders, res, monkeypatch):
     def mock_suborders_query(mainorder):
         return db_suborders
@@ -45,7 +45,7 @@ def test_get_main_order_supply(db_suborders, res, monkeypatch):
 """
     @brief Test for get_main_orders(skip, limit)
 """
-param_get_main_orders_params = [
+param_get_main_orders = [
     (None, None, {"orders_num": 200}, {"orders_num": 100, "code": 0}),
     (None, 1, {"orders_num": 200}, {"orders_num": 1, "code": 0}),
     (1, None, {"orders_num": 200}, {"orders_num": 100, "code": 0}),
@@ -53,7 +53,7 @@ param_get_main_orders_params = [
 ]
 
 
-@pytest.mark.parametrize('skip, limit, db_orders, res', param_get_main_orders_params)
+@pytest.mark.parametrize('skip, limit, db_orders, res', param_get_main_orders)
 def test_get_main_orders(skip, limit, db_orders, res, monkeypatch):
     def mock_orders_query_all():
         orders = []
@@ -99,7 +99,7 @@ param_add_new_main_order = [
       "address": "None",
       "quantity": "1",
       "price": "1",
-      "createuser": "None",
+      "createuser": "1",
       "comments": "None",
       "phone": "None"}, {"code": 0, "msg": "提交成功", "id": 0})
 ]
@@ -126,14 +126,14 @@ def test_add_new_main_order(json_body, res, monkeypatch):
     @brief Test for get_main_order_with_id(mainOrderId)
 """
 # TODO: add more tests, including erroneous inputs
-param_main_order_with_id = [
+param_get_main_order_with_id = [
     (None, {"code": 1, "msg": "该订单不存在"}),
     ({"ID": 1}, {"code": 0, "msg": "成功完成"})
 ]
 
 
-@pytest.mark.parametrize('res_query_result, res', param_main_order_with_id)
-def test_main_order_with_id(res_query_result, res, monkeypatch):
+@pytest.mark.parametrize('res_query_result, res', param_get_main_order_with_id)
+def test_get_main_order_with_id(res_query_result, res, monkeypatch):
     def mock_orders_query_get(id):
         if res_query_result is not None:
             fake = Faker()
@@ -181,7 +181,7 @@ param_post_main_order_with_id = [
       "address": "None",
       "quantity": "1",
       "price": "1",
-      "createuser": "None",
+      "createuser": "0",
       "comments": "None",
       "phone": "None"},
      {"code": 1, "msg": "该订单不存在"}),
@@ -192,7 +192,7 @@ param_post_main_order_with_id = [
       "address": "None",
       "quantity": "1",
       "price": "1",
-      "createuser": "None",
+      "createuser": "0",
       "comments": "None",
       "phone": "None"},
      {"code": 0, "msg": "成功完成"})
