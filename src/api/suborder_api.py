@@ -207,3 +207,20 @@ def post_cancel_subOrder_with_id(subOrderId):
         'data' : data_res
     }
     return res  
+
+def get_sub_order_by_main_order(mainOrderId):
+    res_query_result = subOrders.query.filter_by(mainorder=mainOrderId)
+    res_list = []
+    if res_query_result is None:
+        return {
+            "code" : 1,
+            "data" : {
+                "msg" : "没有找到对应订单"
+            }
+        }
+    for order in res_query_result:
+        res_list.append(order.to_json())
+    return {
+        "code" : 0,
+        "data" : res_list
+    }
