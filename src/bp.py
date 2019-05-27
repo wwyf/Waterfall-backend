@@ -131,3 +131,11 @@ def user_info(userId):
         json_body = json.loads(request.data.decode('utf-8'))
         res = user_api.edit_user_info(userId ,json_body)
         return jsonify(res)
+
+
+@user_bp.route('/checkuser/<string:username>', methods=['GET'])
+def user_check_username(username):
+    if request.method == 'GET':
+        res = user_api.check_username(username)
+        return jsonify(res)
+
