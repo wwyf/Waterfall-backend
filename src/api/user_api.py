@@ -222,8 +222,8 @@ def check_username(username):
         }
 
 def get_orders_by_userid(userId):
-    target_main_order = Orders.query.filter_by(createuser=userId).first()
-    target_sub_order = subOrders.query.filter_by(createuser=userId).first()
+    target_main_order = Orders.query.filter_by(createuser=userId)
+    target_sub_order = subOrders.query.filter_by(createuser=userId)
     res = {
         "mainOrder" : [],
         "subOrder" : []

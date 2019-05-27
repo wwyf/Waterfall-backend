@@ -140,7 +140,7 @@ def user_check_username(username):
         res = user_api.check_username(username)
         return jsonify(res)
 
-@user_bp.route('/api/user/<int:userId>/orders', methods=['GET'])
+@user_bp.route('/<int:userId>/orders', methods=['GET'])
 @user_api.permission_check(roles=['provider', 'purchaser', 'manager'])
 def get_order_by_userid_interface(userId):
     if request.method == 'GET':
