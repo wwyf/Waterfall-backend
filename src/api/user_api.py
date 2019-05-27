@@ -141,7 +141,7 @@ def do_register(json_body):
             "code" : 0,
             "data" : {
                 "msg" : "注册成功",
-                "userId" : find_user.ID
+                "userid" : find_user.ID
             }
         }
 
