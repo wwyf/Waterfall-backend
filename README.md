@@ -13,7 +13,7 @@ git clone git@github.com:wwyf/Waterfall-backend.git
 cd Waterfall-backend
 ```
 
-Then you should setup the envirnment by instrucments below.
+Then you should setup the environment by instruments below.
 ```
 # create virtual environment
 python3 -m venv venv
@@ -30,11 +30,12 @@ flask run
 
 Backend will run on http://localhost:5000.
 
-Or maybe you can just run with the sample shell script `./run.sh` after you configure with virtual envinment named "venv".
+Or maybe you can just run with the sample shell script `./run.sh` after you configure with virtual environment.
 
 ```shell
 git clone git@github.com:wwyf/Waterfall-backend.git
 cd Waterfall-backend
+source venv/bin/activate
 ./run.sh
 ```
 
