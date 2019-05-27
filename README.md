@@ -30,6 +30,14 @@ flask run
 
 Backend will run on http://localhost:5000.
 
+Or maybe you can just run with the sample shell script `./run.sh` after you configure with virtual envinment named "venv".
+
+```shell
+git clone git@github.com:wwyf/Waterfall-backend.git
+cd Waterfall-backend
+./run.sh
+```
+
 ## Docker
 
 ### Build and Run
