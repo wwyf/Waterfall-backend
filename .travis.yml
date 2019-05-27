@@ -1,6 +1,9 @@
 language : python
 python:
   - "3.6"
+before_install:
+- openssl aes-256-cbc -K $encrypted_34d1a249d85c_key -iv $encrypted_34d1a249d85c_iv
+  -in src/db/sql_config.json.enc -out src/db/sql_config.json -d
 install:
   - pip install -r requirements.txt
   - pip install -U pytest
