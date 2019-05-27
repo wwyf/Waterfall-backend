@@ -5,6 +5,7 @@ eval "$(ssh-agent -s)"
 chmod 600 /tmp/deploy_rsa
 ssh-add /tmp/deploy_rsa
 ssh wyf@waterfall.wwyf.top "cd Waterfall/Waterfall-backend && git pull"
-# if [ "$TRAVIS_BRANCH" == "master" ]; then
-
-# fi
+echo $TRAVIS_BRANCH
+if [ "$TRAVIS_BRANCH" == "master" ]; then
+    echo $TRAVIS_BRANCH
+fi
