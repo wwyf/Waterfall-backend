@@ -17,4 +17,4 @@ addons:
   ssh_known_hosts:
     - waterfall.wwyf.top
 after_success:
-- ./deploy.sh
+- chmod +x ./deploy.sh && ./deploy.sh
