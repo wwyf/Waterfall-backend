@@ -175,3 +175,28 @@ def edit_user_info(userid, json_body):
             "msg" : "修改成功"
         }
     }
+
+
+def check_username(username):
+    """
+    若用户名不存在则返回0，
+    如果用户名已存在，返回1
+    Paramerers:
+        username : string
+            用户名
+    """
+    target_user = Users.query.filter_by(username=username).first()
+    if target_user is None:
+        return {
+            "code" : 0,
+            "data" : {
+                "msg" : "用户名不存在"
+            }
+        }
+    else:
+        return {
+            "code" : 1,
+            "data" : {
+                "msg" : "用户名已存在"
+            }
+        }
