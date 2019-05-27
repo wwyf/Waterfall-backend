@@ -77,6 +77,8 @@ def login_check(json_body):
         }
 
 def add_user(username, password, email, phone, usertype, userstatus):
+    if usertype is None:
+        return False
     if usertype == 'manager':
         if not (session.get('role') and session['role'] == 'manager'):
             return False
@@ -220,3 +222,6 @@ def check_username(username):
                 "msg" : "用户名已存在"
             }
         }
+
+# by wyf
+# this comment is useless, just for test, you can delete it safely.

@@ -154,6 +154,13 @@ def post_main_order_with_id(mainOrderId, json_body):
         返回响应请求 res
     """
     res_query_result = Orders.query.get(mainOrderId)
+    if res_query_result is None:
+        return {
+            'code' : 1,
+            'data' : {
+                'msg' : "该订单不存在"
+            }
+        }
     # 修改指定订单信息
     res_query_result.order_name = json_body['name']
     res_query_result.order_summary = json_body['summary']
@@ -164,21 +171,12 @@ def post_main_order_with_id(mainOrderId, json_body):
     res_query_result.comments = json_body['comments']
     res_query_result.phone = json_body['phone']
     db.session.commit()
-    if res_query_result is None:
-        msg = "该订单不存在"
-        code = 1
-    else:
-        msg = "成功完成"
-        code = 0
-    # 构造res
-    data_res = {
-        "msg" : msg
+    return {
+        'code' : 0,
+        'data' : {
+            'msg' : "成功完成"
+        }
     }
-    res = {
-        'code' : code,
-        'data' : data_res
-    }
-    return res
 
 def post_finish_mainOrder_with_id(mainOrderId):
     """
@@ -193,24 +191,23 @@ def post_finish_mainOrder_with_id(mainOrderId):
         res: 返回json响应
     """
     res_query_result = Orders.query.get(mainOrderId)
+    if res_query_result is None:
+        return {
+            'code' : 1,
+            'data' : {
+                'msg' : '该订单不存在'
+            }
+        }
     # 修改指定订单信息
     res_query_result.status = 3
     db.session.commit()
-    if res_query_result is None:
-        msg = "该订单不存在"
-        code = 1
-    else:
-        msg = "成功完成"
-        code = 0
-    # 构造res
-    data_res = {
-        "msg" : msg
+    return {
+        'code' : 0,
+        'data' : {
+            'msg' : '成功完成'
+        }
     }
-    res = {
-        'code' : code,
-        'data' : data_res
-    }
-    return res  
+ 
 
 def post_cancel_mainOrder_with_id(mainOrderId):
     """
@@ -226,21 +223,19 @@ def post_cancel_mainOrder_with_id(mainOrderId):
         res: 返回json响应
     """
     res_query_result = Orders.query.get(mainOrderId)
+    if res_query_result is None:
+        return {
+            'code' : 1,
+            'data' : {
+                'msg' : '该订单不存在'
+            }
+        }
     # 修改指定订单信息
     res_query_result.status = 4
     db.session.commit()
-    if res_query_result is None:
-        msg = "该订单不存在"
-        code = 1
-    else:
-        msg = "成功完成"
-        code = 0
-    # 构造res
-    data_res = {
-        "msg" : msg
+    return {
+        'code' : 0,
+        'data' : {
+            'msg' : '成功完成'
+        }
     }
-    res = {
-        'code' : code,
-        'data' : data_res
-    }
-    return res  
