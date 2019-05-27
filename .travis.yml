@@ -6,5 +6,4 @@ install:
   - pip install -U pytest
   
 script: 
-  - echo "{ \"username\": \"test\",\"password\": \"test\", \"host\": \"test\", \"database\":\"waterfall\"}"  > src/db/sql_config.json
-  - py.test
+  - chmod +x ./tests/test.sh && ./tests/test.sh
