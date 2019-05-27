@@ -134,19 +134,19 @@ param_add_user = [
     ("test", "password", "spam@spam.com", "88888888", "supplier", 0, "manager", True),
 ]
 
-@pytest.mark.parametrize('username, password, email, phone, usertype, userstatus, role, res', param_add_user)
-def test_add_user(username, password, email, phone, usertype, userstatus, role, res, monkeypatch):
-    def mock_db_add(user):
-        return
+# @pytest.mark.parametrize('username, password, email, phone, usertype, userstatus, role, res', param_add_user)
+# def test_add_user(username, password, email, phone, usertype, userstatus, role, res, monkeypatch):
+#     def mock_db_add(user):
+#         return
 
-    def mock_db_commit():
-        return
+#     def mock_db_commit():
+#         return
 
-    with monkeypatch.context() as m:
-        monkeypatch.setattr("src.api.user_api.session", {"role": role} if role is not None else {})
-        monkeypatch.setattr("src.api.user_api.db.session", Mocker(add=mock_db_add, commit=mock_db_commit))
-        result = add_user(username, password, email, phone, usertype, userstatus)
-        assert result == res
+#     with monkeypatch.context() as m:
+#         monkeypatch.setattr("src.api.user_api.session", {"role": role} if role is not None else {})
+#         monkeypatch.setattr("src.api.user_api.db.session", Mocker(add=mock_db_add, commit=mock_db_commit))
+#         result = add_user(username, password, email, phone, usertype, userstatus)
+#         assert result == res
 
 
 """
@@ -162,30 +162,30 @@ param_do_register = [
 ]
 
 
-@pytest.mark.parametrize('json_body, find_user, finished, res', param_do_register)
-def test_do_register(json_body, find_user, finished, res, monkeypatch):
-    def mock_users_query_filter_by(username):
-        def mock_first():
-            if find_user is not None:
-                user = Users(username=username,
-                             password="test",
-                             email="spam@spam.com",
-                             phone="None",
-                             usertype=0,
-                             userstatus=0)
-                user.ID = find_user["ID"]
-                return user
-            else:
-                return None
-        return Mocker(first=mock_first)
+# @pytest.mark.parametrize('json_body, find_user, finished, res', param_do_register)
+# def test_do_register(json_body, find_user, finished, res, monkeypatch):
+#     def mock_users_query_filter_by(username):
+#         def mock_first():
+#             if find_user is not None:
+#                 user = Users(username=username,
+#                              password="test",
+#                              email="spam@spam.com",
+#                              phone="None",
+#                              usertype=0,
+#                              userstatus=0)
+#                 user.ID = find_user["ID"]
+#                 return user
+#             else:
+#                 return None
+#         return Mocker(first=mock_first)
 
-    with monkeypatch.context() as m:
-        monkeypatch.setattr("src.api.user_api.Users.query", Mocker(filter_by=mock_users_query_filter_by))
-        monkeypatch.setattr("src.api.user_api.add_user", lambda *x : finished)
-        result = do_register(json_body)
-        assert (isinstance(result, dict)
-                and result["code"] == res["code"]
-                and result["data"]["msg"] == res["msg"])
+#     with monkeypatch.context() as m:
+#         monkeypatch.setattr("src.api.user_api.Users.query", Mocker(filter_by=mock_users_query_filter_by))
+#         monkeypatch.setattr("src.api.user_api.add_user", lambda *x : finished)
+#         result = do_register(json_body)
+#         assert (isinstance(result, dict)
+#                 and result["code"] == res["code"]
+#                 and result["data"]["msg"] == res["msg"])
 
 
 """
@@ -243,27 +243,27 @@ param_edit_user_info = [
         {"ID": 1}, {"role":"manager", "username":"test"}, {"code": 0, "msg": "修改成功"}),
 ]
 
-@pytest.mark.parametrize('json_body, find_user, session, res', param_edit_user_info)
-def test_edit_user_info(json_body, find_user, session, res, monkeypatch):
-    def mock_users_query_filter_by(ID):
-        def mock_first():
-            if find_user is not None:
-                user = Users(username=json_body["username"],
-                             password="test",
-                             email="spam@spam.com",
-                             phone="None",
-                             usertype=0,
-                             userstatus=0)
-                user.ID = ID
-                return user
-            else:
-                return None
-        return Mocker(first=mock_first)
+# @pytest.mark.parametrize('json_body, find_user, session, res', param_edit_user_info)
+# def test_edit_user_info(json_body, find_user, session, res, monkeypatch):
+#     def mock_users_query_filter_by(ID):
+#         def mock_first():
+#             if find_user is not None:
+#                 user = Users(username=json_body["username"],
+#                              password="test",
+#                              email="spam@spam.com",
+#                              phone="None",
+#                              usertype=0,
+#                              userstatus=0)
+#                 user.ID = ID
+#                 return user
+#             else:
+#                 return None
+#         return Mocker(first=mock_first)
 
-    with monkeypatch.context() as m:
-        monkeypatch.setattr("src.api.user_api.Users.query", Mocker(filter_by=mock_users_query_filter_by))
-        monkeypatch.setattr("src.api.user_api.session", session)
-        result = edit_user_info(0, json_body)
-        assert (isinstance(result, dict)
-                and result["code"] == res["code"]
-                and result["data"]["msg"] == res["msg"])
+#     with monkeypatch.context() as m:
+#         monkeypatch.setattr("src.api.user_api.Users.query", Mocker(filter_by=mock_users_query_filter_by))
+#         monkeypatch.setattr("src.api.user_api.session", session)
+#         result = edit_user_info(0, json_body)
+#         assert (isinstance(result, dict)
+#                 and result["code"] == res["code"]
+#                 and result["data"]["msg"] == res["msg"])
