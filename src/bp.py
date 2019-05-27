@@ -92,6 +92,12 @@ def solve_cancel_subOrder_with_id(subOrderId):
         res = suborder_api.post_cancel_subOrder_with_id(subOrderId)
         return jsonify(res)
 
+@order_bp.route('/mainOrder/<int:mainOrderId>/subOrders', methods=['GET'])
+def solve_subOrder_with_mainOrder(mainOrderId):
+    if request.method == 'GET':
+        res = suborder_api.get_sub_order_by_main_order(mainOrderId)
+        return jsonify(res)
+
 @user_bp.route('/login', methods=['GET', 'POST'])
 def user_login():
     if request.method == 'GET':
