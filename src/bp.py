@@ -10,7 +10,8 @@ from src.db.model import db, Orders
 from src.api import (
     mainorder_api,
     suborder_api,
-    user_api
+    user_api,
+    wallet_api
 )
 
 user_bp = Blueprint('user', __name__, url_prefix='/apis/user')
@@ -92,6 +93,12 @@ def solve_cancel_subOrder_with_id(subOrderId):
         res = suborder_api.post_cancel_subOrder_with_id(subOrderId)
         return jsonify(res)
 
+@order_bp.route('/mainOrder/<int:mainOrderId>/subOrders', methods=['GET'])
+def solve_subOrder_with_mainOrder(mainOrderId):
+    if request.method == 'GET':
+        res = suborder_api.get_sub_order_by_main_order(mainOrderId)
+        return jsonify(res)
+
 @user_bp.route('/login', methods=['GET', 'POST'])
 def user_login():
     if request.method == 'GET':
@@ -116,7 +123,7 @@ def user_logout():
         return jsonify(res)
 
 @user_bp.route('/<int:userId>', methods=['GET', 'POST'])
-@user_api.permission_check(roles=['supplier', 'purchaser', 'manager'])
+@user_api.permission_check(roles=['provider', 'purchaser', 'manager'])
 def user_info(userId):
     if request.method == 'GET':
         res = user_api.get_user_info(userId)
@@ -124,4 +131,32 @@ def user_info(userId):
     if request.method == 'POST':
         json_body = json.loads(request.data.decode('utf-8'))
         res = user_api.edit_user_info(userId ,json_body)
+        return jsonify(res)
+
+
+@user_bp.route('/checkuser/<string:username>', methods=['GET'])
+def user_check_username(username):
+    if request.method == 'GET':
+        res = user_api.check_username(username)
+        return jsonify(res)
+
+@wallet_bp.route('/<int:userId>', methods=['GET'])
+def wallet_balance_interface(userId):
+    if request.method == 'GET':
+        res = wallet_api.get_wallet_balance(userId)
+        return jsonify(res)
+
+@wallet_bp.route('/<int:userId>/deposit', methods=['POST'])
+@user_api.permission_check(roles=['manager'])
+def wallet_deposit_interface(userId):
+    if request.method == "POST":
+        json_body = json.loads(request.data.decode('utf-8'))
+        res = wallet_api.deposit_wallet_balance(userId, json_body['amount'])
+        return jsonify(res)
+
+@wallet_bp.route('/<int:userId>/withdraw', methods=['POST'])
+def wallet_withdraw_interface(userId):
+    if request.method == "POST":
+        json_body = json.loads(request.data.decode('utf-8'))
+        res = wallet_api.withdraw_wallet_balance(userId, json_body['amount'])
         return jsonify(res)

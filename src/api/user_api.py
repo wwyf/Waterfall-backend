@@ -94,6 +94,22 @@ def add_user(username, password, email, phone, usertype, userstatus):
     return True
 
 def do_register(json_body):
+    required_field = ['username', 'password', 'email', 'phone', 'role']
+    for field in required_field:
+        if field not in json_body.keys():
+            return {
+                "code" : 1,
+                "data" : {
+                    "msg" : "信息不完整"
+                }
+            }
+        if json_body[field] == "":
+            return {
+                "code" : 1,
+                "data" : {
+                    "msg" : "信息不完整"
+                }
+            }
     find_user = Users.query.filter_by(username=json_body['username']).first()
     if not find_user is None:
         return {
@@ -118,10 +134,14 @@ def do_register(json_body):
             }
         }
     else:
+        find_user = Users.query.filter_by(username=json_body['username']).first()
+        session['username'] = find_user.username
+        session['role'] = find_user.usertype
         return {
             "code" : 0,
             "data" : {
-                "msg" : "注册成功"
+                "msg" : "注册成功",
+                "userid" : find_user.ID
             }
         }
 
@@ -175,3 +195,28 @@ def edit_user_info(userid, json_body):
             "msg" : "修改成功"
         }
     }
+
+
+def check_username(username):
+    """
+    若用户名不存在则返回0，
+    如果用户名已存在，返回1
+    Paramerers:
+        username : string
+            用户名
+    """
+    target_user = Users.query.filter_by(username=username).first()
+    if target_user is None:
+        return {
+            "code" : 0,
+            "data" : {
+                "msg" : "用户名不存在"
+            }
+        }
+    else:
+        return {
+            "code" : 1,
+            "data" : {
+                "msg" : "用户名已存在"
+            }
+        }
