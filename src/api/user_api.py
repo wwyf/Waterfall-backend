@@ -126,9 +126,6 @@ def do_register(json_body):
         json_body['role'],
         1
     )
-    find_user = Users.query.filter_by(username=json_body['username']).first()
-    session['username'] = find_user.username
-    session['role'] = find_user.usertype
     if not finished:
         return {
             "code" : 1,
@@ -137,6 +134,9 @@ def do_register(json_body):
             }
         }
     else:
+        find_user = Users.query.filter_by(username=json_body['username']).first()
+        session['username'] = find_user.username
+        session['role'] = find_user.usertype
         return {
             "code" : 0,
             "data" : {

@@ -10,7 +10,8 @@ from src.db.model import db, Orders
 from src.api import (
     mainorder_api,
     suborder_api,
-    user_api
+    user_api,
+    wallet_api
 )
 
 user_bp = Blueprint('user', __name__, url_prefix='/apis/user')
@@ -139,3 +140,23 @@ def user_check_username(username):
         res = user_api.check_username(username)
         return jsonify(res)
 
+@wallet_bp.route('/<int:userId>', methods=['GET'])
+def wallet_balance_interface(userId):
+    if request.method == 'GET':
+        res = wallet_api.get_wallet_balance(userId)
+        return jsonify(res)
+
+@wallet_bp.route('/<int:userId>/deposit', methods=['POST'])
+@user_api.permission_check(roles=['manager'])
+def wallet_deposit_interface(userId):
+    if request.method == "POST":
+        json_body = json.loads(request.data.decode('utf-8'))
+        res = wallet_api.deposit_wallet_balance(userId, json_body['amount'])
+        return jsonify(res)
+
+@wallet_bp.route('/<int:userId>/withdraw', methods=['POST'])
+def wallet_withdraw_interface(userId):
+    if request.method == "POST":
+        json_body = json.loads(request.data.decode('utf-8'))
+        res = wallet_api.withdraw_wallet_balance(userId, json_body['amount'])
+        return jsonify(res)
