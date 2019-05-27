@@ -222,3 +222,6 @@ def check_username(username):
                 "msg" : "用户名已存在"
             }
         }
+
+# by wyf
+# this comment is useless, just for test, you can delete it safely.
