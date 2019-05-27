@@ -1,5 +1,5 @@
 from flask import Flask, render_template, session, request, redirect, jsonify
-from src.db.model import db, Users
+from src.db.model import db, Users, Orders, subOrders
 from functools import wraps
 import json
 
@@ -220,3 +220,21 @@ def check_username(username):
                 "msg" : "用户名已存在"
             }
         }
+
+def get_orders_by_userid(userId):
+    target_main_order = Orders.query.filter_by(createuser=userId).first()
+    target_sub_order = subOrders.query.filter_by(createuser=userId).first()
+    res = {
+        "mainOrder" : [],
+        "subOrder" : []
+    }
+
+    for order in target_main_order:
+        res['mainOrder'].append(order.to_json())
+    for order in target_sub_order:
+        res['subOrder'].append(order.to_json())
+
+    return {
+        "code" : 0,
+        "data" : res
+    }
