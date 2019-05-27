@@ -127,7 +127,7 @@ def user_info(userId):
         return jsonify(res)
 
 
-@user_bp.route('/check/<string:username>', methods=['GET'])
+@user_bp.route('/checkuser/<string:username>', methods=['GET'])
 def user_check_username(username):
     if request.method == 'GET':
         res = user_api.check_username(username)
