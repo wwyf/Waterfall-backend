@@ -10,4 +10,4 @@ install:
   
 script: 
 # py.test will load configuration from setup.cfg
-  - chmod +x ./tests/test.sh && ./tests/test.sh
+  - py.test
