@@ -107,7 +107,7 @@ def do_register(json_body):
             return {
                 "code" : 1,
                 "data" : {
-                    "msg" : "没有权限"
+                    "msg" : "信息不完整"
                 }
             }
     find_user = Users.query.filter_by(username=json_body['username']).first()

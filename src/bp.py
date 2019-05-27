@@ -122,7 +122,7 @@ def user_logout():
         return jsonify(res)
 
 @user_bp.route('/<int:userId>', methods=['GET', 'POST'])
-@user_api.permission_check(roles=['supplier', 'purchaser', 'manager'])
+@user_api.permission_check(roles=['provider', 'purchaser', 'manager'])
 def user_info(userId):
     if request.method == 'GET':
         res = user_api.get_user_info(userId)
