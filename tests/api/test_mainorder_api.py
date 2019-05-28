@@ -92,28 +92,55 @@ def test_get_main_orders(skip, limit, db_orders, res, monkeypatch):
     @brief Test for add_new_main_order(json_body)
 """
 # TODO: add more tests, including erroneous inputs
-param_add_new_main_order = [
-    ({"name": "None",
-      "summary": "None",
-      "deadline": datetime.datetime.utcnow(),
-      "address": "None",
-      "quantity": "1",
-      "price": "1",
-      "createuser": "1",
-      "comments": "None",
-      "phone": "None"}, {"code": 0, "msg": "提交成功", "id": 0})
+param_add_new_main_order = [(
+        {
+            "name": "None",
+            "summary": "None",
+            "deadline": datetime.datetime.utcnow(),
+            "address": "None",
+            "quantity": "1",
+            "price": "1",
+            "createuser": "1",
+            "comments": "None",
+            "phone": "None"
+        },
+        {
+            "role" : "customer",
+            "username" : "None"
+        },
+        {
+            "ID" : 1,
+        },
+        {"code": 0, "msg": "提交成功", "id": 0}
+    )
 ]
 
 
-@pytest.mark.parametrize('json_body, res', param_add_new_main_order)
-def test_add_new_main_order(json_body, res, monkeypatch):
+@pytest.mark.parametrize('json_body,session, targets_user, res', param_add_new_main_order)
+def test_add_new_main_order(json_body,session, targets_user, res, monkeypatch):
     def mock_db_add(order):
         order.ID = 0
 
     def mock_db_commit():
         return
+    def mock_users_query_filter_by(username):
+        def mock_first():
+            if targets_user is not None:
+                user = Users(username=username,
+                             password="123456",
+                             email="spam@spam.com",
+                             phone="None",
+                             usertype=0,
+                             userstatus=0)
+                user.ID = targets_user["ID"]
+                return user
+            else:
+                return None
+        return Mocker(first=mock_first)
 
     with monkeypatch.context() as m:
+        monkeypatch.setattr("src.api.mainorder_api.session", session)
+        monkeypatch.setattr("src.api.mainorder_api.Users.query", Mocker(filter_by=mock_users_query_filter_by))
         monkeypatch.setattr("src.api.mainorder_api.db.session",
                             Mocker(add=mock_db_add, commit=mock_db_commit))
         result = add_new_main_order(json_body)
