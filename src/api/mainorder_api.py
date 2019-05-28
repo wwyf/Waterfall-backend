@@ -70,14 +70,6 @@ def add_new_main_order(json_body):
         如果有错误，返回 -1 ,否则返回刚刚创建的新订单的id。
         返回响应请求 res
     """      
-    if not (session.get('username') and session['role'] == 'customer'):
-        # 登陆了，且为customer才能使用该接口
-        return {
-            "code" : 1,
-            "data" : {
-                "msg" : "您没有权限使用该接口",
-            }
-        }
     username = session.get('username')
     query_result = Users.query.filter_by(username=username).first()
     # 讲道理，能登陆有cookies数据库里一定找得到吧，不会有None的

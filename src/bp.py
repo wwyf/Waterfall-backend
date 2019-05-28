@@ -23,15 +23,20 @@ CORS(order_bp)
 wallet_bp = Blueprint('wallet', __name__, url_prefix='/apis/wallet')
 CORS(wallet_bp)
 
-@order_bp.route('/mainOrder', methods=('GET', 'POST'))
+@order_bp.route('/mainOrder', methods=('GET', ))
 @user_api.permission_check(roles=['manager', 'customer', 'provider'])
-def solve_mainOrder():
+def solve_mainOrder_get():
     if request.method == 'GET':
         skip = request.args.get('skip')
         limit = request.args.get('limit')
         res = mainorder_api.get_main_orders(skip, limit)
         return jsonify(res)
-    elif request.method == 'POST':
+
+@order_bp.route('/mainOrder', methods=('POST',))
+@user_api.permission_check(roles=['customer'])
+def solve_mainOrder_post():
+    # 登陆了，且为customer才能使用该接口
+    if request.method == 'POST':
         json_body = json.loads(request.data)
         res = mainorder_api.add_new_main_order(json_body)
         return jsonify(res)
