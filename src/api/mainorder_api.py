@@ -48,6 +48,7 @@ def get_main_orders(skip, limit):
     for i in res_query_results[skip:skip+limit]:
         this_order = i.to_json()
         this_order['current_supply'] = get_main_order_supply(i.ID)
+        this_order['remain_quantity'] = this_order['quantity'] - this_order['current_supply']
         res_orders.append(this_order)
         
     data_res = {
@@ -135,6 +136,7 @@ def get_main_order_with_id(mainOrderId):
     else:
         this_order = res_query_result.to_json()
         this_order['current_supply'] = get_main_order_supply(res_query_result.ID)
+        this_order['remain_quantity'] = this_order['quantity'] - this_order['current_supply']
         data_res = {
             "order" : this_order,
             "msg" : "成功完成"

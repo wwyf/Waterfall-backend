@@ -15,7 +15,6 @@ from utils import Mocker
 from src.db.model import *
 from src.api.suborder_api import *
 
-
 """
     @brief Test for get_sub_orders(skip, limit)
 """
@@ -52,7 +51,8 @@ def test_get_sub_orders(skip, limit, db_suborders, res, monkeypatch):
         monkeypatch.setattr("src.api.suborder_api.subOrders.query", Mocker(all=mock_suborders_query_all))
         result = get_sub_orders(skip, limit)
         assert isinstance(result, dict) and result["code"] == res["code"] \
-            and isinstance(result["data"], dict) and len(result["data"]["orders"]) == res["suborders_num"]
+               and isinstance(result["data"], dict) and len(result["data"]["orders"]) == res["suborders_num"]
+
 
 """
     @brief Test for add_new_sub_order(json_body)
@@ -80,7 +80,7 @@ def test_add_new_main_order(json_body, res, monkeypatch):
         result = add_new_sub_order(json_body)
         assert isinstance(result, dict) and result["code"] == res["code"] \
                and isinstance(result["data"], dict) and result["data"]["msg"] == res["msg"] \
-                and result["data"]["id"] == res["id"]
+               and result["data"]["id"] == res["id"]
 
 
 """
@@ -117,8 +117,8 @@ def test_get_sub_order_with_id(res_query_result, res, monkeypatch):
         monkeypatch.setattr("src.api.suborder_api.subOrders.query", Mocker(get=mock_suborders_query_get))
         result = get_sub_order_with_id(0)
         assert isinstance(result, dict) and result["code"] == res["code"] \
-                and isinstance(result["data"], dict) and result["data"]["msg"] == res["msg"] \
-                and (result["data"]["order"]["id"] == res_query_result["ID"]
+               and isinstance(result["data"], dict) and result["data"]["msg"] == res["msg"] \
+               and (result["data"]["order"]["id"] == res_query_result["ID"]
                     if "order" in result["data"] else True)
 
 
@@ -251,3 +251,37 @@ def test_post_cancel_sub_order_with_id(res_query_result, res, monkeypatch):
         result = post_cancel_subOrder_with_id(res_query_result["ID"] if res_query_result is not None else 0)
         assert isinstance(result, dict) and result["code"] == res["code"] \
                and isinstance(result["data"], dict) and result["data"]["msg"] == res["msg"]
+
+
+"""
+    @brief Test for get_sub_order_by_main_order(mainOrderId):
+"""
+param_get_sub_order_by_main_order = [
+    (None, {"code": 1, "msg": "没有找到对应订单"}),
+    ({"ID": 1}, {"code": 0})
+]
+
+
+@pytest.mark.parametrize('res_query_result, res', param_get_sub_order_by_main_order)
+def test_get_sub_order_by_main_order(res_query_result, res, monkeypatch):
+    def mock_suborders_query_filter_by(mainorder):
+        if res_query_result is not None:
+            fake = Faker()
+            order = subOrders(mainorder=0,
+                              createdate=fake.date_time(),
+                              createuser=0,
+                              quantity=1,
+                              comments="None",
+                              phone=fake.phone_number(),
+                              status=0)
+            order.ID = res_query_result["ID"]
+            return [order]
+        else:
+            return None
+
+    with monkeypatch.context() as m:
+        monkeypatch.setattr("src.api.suborder_api.subOrders.query", Mocker(filter_by=mock_suborders_query_filter_by))
+        result = get_sub_order_by_main_order(res_query_result["ID"] if res_query_result is not None else 0)
+        assert isinstance(result, dict) and result["code"] == res["code"] \
+            and (isinstance(result["data"], dict) and result["data"]["msg"] == res["msg"]) \
+            if "msg" in res else True
