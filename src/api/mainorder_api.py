@@ -1,4 +1,5 @@
-from src.db.model import db, Orders, subOrders
+from src.db.model import db, Orders, subOrders, Users
+from flask import Flask, session, request
 import datetime
 import traceback
 import sys
@@ -68,7 +69,19 @@ def add_new_main_order(json_body):
     Returns:
         如果有错误，返回 -1 ,否则返回刚刚创建的新订单的id。
         返回响应请求 res
-    """
+    """      
+    if not (session.get('username') and session['role'] == 'customer'):
+        # 登陆了，且为customer才能使用该接口
+        return {
+            "code" : 1,
+            "data" : {
+                "msg" : "您没有权限使用该接口",
+            }
+        }
+    username = session.get('username')
+    query_result = Users.query.filter_by(username=username).first()
+    # 讲道理，能登陆有cookies数据库里一定找得到吧，不会有None的
+    createuser = query_result.ID
     # default order
     order_name = json_body['name']
     order_summary = json_body['summary']
@@ -78,7 +91,7 @@ def add_new_main_order(json_body):
     quantity = int(json_body['quantity'])
     price = int(json_body['price'])
     totalprice = quantity*price
-    createuser = json_body['createuser']
+    # createuser = json_body['createuser']
     comments = json_body['comments']
     phone = json_body['phone']
     status = 1

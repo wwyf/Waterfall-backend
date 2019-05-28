@@ -24,6 +24,7 @@ wallet_bp = Blueprint('wallet', __name__, url_prefix='/apis/wallet')
 CORS(wallet_bp)
 
 @order_bp.route('/mainOrder', methods=('GET', 'POST'))
+@user_api.permission_check(roles=['manager', 'customer', 'provider'])
 def solve_mainOrder():
     if request.method == 'GET':
         skip = request.args.get('skip')
