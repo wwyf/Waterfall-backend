@@ -126,33 +126,35 @@ def test_login_check(json_body, target_user, res, monkeypatch):
     @brief Test for add_user(username, password, email, phone, usertype, userstatus)
 """
 param_add_user = [
-    ("test", "password", "spam@spam.com", "88888888", "manager", 0, None, False),
-    ("test", "password", "spam@spam.com", "88888888", "manager", 0, "supplier", False),
-    ("test", "password", "spam@spam.com", "88888888", "manager", 0, "manager", True),
-    ("test", "password", "spam@spam.com", "88888888", "supplier", 0, None, False),
-    ("test", "password", "spam@spam.com", "88888888", "supplier", 0, "supplier", True),
+    ("test", "password", "spam@spam.com", "88888888", None, 0, "manager", False),
     ("test", "password", "spam@spam.com", "88888888", "supplier", 0, "manager", True),
+    ("test", "password", "spam@spam.com", "88888888", "manager", 0, "manager", True),
+    ("test", "password", "spam@spam.com", "88888888", "manager", 0, "supplier", False),
+    ("test", "password", "spam@spam.com", "88888888", "supplier", 0, "supplier", True),
 ]
 
-# @pytest.mark.parametrize('username, password, email, phone, usertype, userstatus, role, res', param_add_user)
-# def test_add_user(username, password, email, phone, usertype, userstatus, role, res, monkeypatch):
-#     def mock_db_add(user):
-#         return
+@pytest.mark.parametrize('username, password, email, phone, usertype, userstatus, role, res', param_add_user)
+def test_add_user(username, password, email, phone, usertype, userstatus, role, res, monkeypatch):
+    def mock_db_add(user):
+        return
 
-#     def mock_db_commit():
-#         return
+    def mock_db_commit():
+        return
 
-#     with monkeypatch.context() as m:
-#         monkeypatch.setattr("src.api.user_api.session", {"role": role} if role is not None else {})
-#         monkeypatch.setattr("src.api.user_api.db.session", Mocker(add=mock_db_add, commit=mock_db_commit))
-#         result = add_user(username, password, email, phone, usertype, userstatus)
-#         assert result == res
+    with monkeypatch.context() as m:
+        monkeypatch.setattr("src.api.user_api.session", {"role": role} if role is not None else {})
+        monkeypatch.setattr("src.api.user_api.db.session", Mocker(add=mock_db_add, commit=mock_db_commit))
+        result = add_user(username, password, email, phone, usertype, userstatus)
+        assert result == res
 
 
 """
     @brief Test for do_register(json_body)
 """
 param_do_register = [
+    ({}, None, False, {"code": 1, "msg": "信息不完整"}),
+    ({"username": "", "password": "", "email": "", "phone": "", "role": ""},
+        None, False, {"code": 1, "msg": "信息不完整"}),
     ({"username": "test", "password": "test", "email": "spam@spam.com", "phone": "88888888", "role": "test"},
         None, False, {"code": 1, "msg": "没有权限"}),
     ({"username": "test", "password": "test", "email": "spam@spam.com", "phone": "88888888", "role": "test"},
@@ -162,30 +164,48 @@ param_do_register = [
 ]
 
 
-# @pytest.mark.parametrize('json_body, find_user, finished, res', param_do_register)
-# def test_do_register(json_body, find_user, finished, res, monkeypatch):
-#     def mock_users_query_filter_by(username):
-#         def mock_first():
-#             if find_user is not None:
-#                 user = Users(username=username,
-#                              password="test",
-#                              email="spam@spam.com",
-#                              phone="None",
-#                              usertype=0,
-#                              userstatus=0)
-#                 user.ID = find_user["ID"]
-#                 return user
-#             else:
-#                 return None
-#         return Mocker(first=mock_first)
+@pytest.mark.parametrize('json_body, find_user, finished, res', param_do_register)
+def test_do_register(json_body, find_user, finished, res, monkeypatch):
+    fake_users_db = []
+    if find_user is not None:
+        user = Users(username=json_body["username"],
+                     password=json_body["password"],
+                     email=json_body["email"],
+                     phone=json_body["phone"],
+                     usertype=0,
+                     userstatus=0)
+        user.ID = find_user["ID"]
+        fake_users_db.append(user)
 
-#     with monkeypatch.context() as m:
-#         monkeypatch.setattr("src.api.user_api.Users.query", Mocker(filter_by=mock_users_query_filter_by))
-#         monkeypatch.setattr("src.api.user_api.add_user", lambda *x : finished)
-#         result = do_register(json_body)
-#         assert (isinstance(result, dict)
-#                 and result["code"] == res["code"]
-#                 and result["data"]["msg"] == res["msg"])
+    def mock_users_query_filter_by(username):
+        def mock_first():
+            for u in fake_users_db:
+                if u.username == username:
+                    return u
+            else:
+                return None
+        return Mocker(first=mock_first)
+
+    def mock_add_user(username, password, email, phone, role, userstatus):
+        if finished:
+            user = Users(username=username,
+                         password=password,
+                         email=email,
+                         phone=phone,
+                         usertype=0,
+                         userstatus=userstatus)
+            user.ID = 1
+            fake_users_db.append(user)
+        return finished
+
+    with monkeypatch.context() as m:
+        monkeypatch.setattr("src.api.user_api.Users.query", Mocker(filter_by=mock_users_query_filter_by))
+        monkeypatch.setattr("src.api.user_api.add_user", mock_add_user)
+        monkeypatch.setattr("src.api.user_api.session", {})
+        result = do_register(json_body)
+        assert (isinstance(result, dict)
+                and result["code"] == res["code"]
+                and result["data"]["msg"] == res["msg"])
 
 
 """
@@ -236,34 +256,74 @@ def test_get_user_info(target_user, res, monkeypatch):
 """
 param_edit_user_info = [
     ({"username": "test", "password": "test", "email": "spam@spam.com", "phone": "88888888", "role": "test"},
-        {"ID": 1}, {"role":"supplier", "username":"test"}, {"code": 1, "msg": "没有权限"}),
+        {"ID": 1}, {"role":"supplier", "username":"test1"}, {"code": 1, "msg": "没有权限"}),
     ({"username": "test", "password": "test", "email": "spam@spam.com", "phone": "88888888", "role": "test"},
-        {"ID": 1}, {"role":"manager", "username":"test1"}, {"code": 1, "msg": "没有权限"}),
-    ({"username": "test", "password": "test", "email": "spam@spam.com", "phone": "88888888", "role": "test"},
+        {"ID": 1}, {"role":"supplier", "username":"test"}, {"code": 0, "msg": "修改成功"}),
+    ({"username": "test", "password": "test", "email": "spam@spam.com",
+      "phone": "88888888", "role": "test", "status": "1"},
+        {"ID": 1}, {"role":"manager", "username":"test1"}, {"code": 0, "msg": "修改成功"}),
+    ({"username": "test", "password": "test", "email": "spam@spam.com",
+      "phone": "88888888", "role": "test", "status": "1"},
         {"ID": 1}, {"role":"manager", "username":"test"}, {"code": 0, "msg": "修改成功"}),
 ]
 
-# @pytest.mark.parametrize('json_body, find_user, session, res', param_edit_user_info)
-# def test_edit_user_info(json_body, find_user, session, res, monkeypatch):
-#     def mock_users_query_filter_by(ID):
-#         def mock_first():
-#             if find_user is not None:
-#                 user = Users(username=json_body["username"],
-#                              password="test",
-#                              email="spam@spam.com",
-#                              phone="None",
-#                              usertype=0,
-#                              userstatus=0)
-#                 user.ID = ID
-#                 return user
-#             else:
-#                 return None
-#         return Mocker(first=mock_first)
+@pytest.mark.parametrize('json_body, find_user, session, res', param_edit_user_info)
+def test_edit_user_info(json_body, find_user, session, res, monkeypatch):
+    def mock_users_query_filter_by(ID):
+        def mock_first():
+            if find_user is not None:
+                user = Users(username=json_body["username"],
+                             password="test",
+                             email="spam@spam.com",
+                             phone="None",
+                             usertype=0,
+                             userstatus=0)
+                user.ID = ID
+                return user
+            else:
+                return None
+        return Mocker(first=mock_first)
 
-#     with monkeypatch.context() as m:
-#         monkeypatch.setattr("src.api.user_api.Users.query", Mocker(filter_by=mock_users_query_filter_by))
-#         monkeypatch.setattr("src.api.user_api.session", session)
-#         result = edit_user_info(0, json_body)
-#         assert (isinstance(result, dict)
-#                 and result["code"] == res["code"]
-#                 and result["data"]["msg"] == res["msg"])
+    with monkeypatch.context() as m:
+        monkeypatch.setattr("src.api.user_api.Users.query", Mocker(filter_by=mock_users_query_filter_by))
+        monkeypatch.setattr("src.api.user_api.session", session)
+        result = edit_user_info(0, json_body)
+        assert (isinstance(result, dict)
+                and result["code"] == res["code"]
+                and result["data"]["msg"] == res["msg"])
+
+
+"""
+    @brief Test for check_username(username)
+"""
+param_check_username = [
+    ("test", None, {"code": 0, "msg": "用户名不存在"}),
+    ("test1", {"ID": 1}, {"code": 1, "msg": "用户名已存在"})
+]
+
+
+@pytest.mark.parametrize('username, target_user, res', param_check_username)
+def test_check_username(username, target_user, res, monkeypatch):
+    def mock_users_query_filter_by(username):
+        def mock_first():
+            fake = Faker()
+            if target_user is not None:
+                user = Users(username=username,
+                             password=fake.password(),
+                             email=fake.email(),
+                             phone=fake.phone_number(),
+                             usertype=0,
+                             userstatus=0)
+                user.ID = target_user["ID"]
+                return [user]
+            else:
+                return None
+
+        return Mocker(first=mock_first)
+
+    with monkeypatch.context() as m:
+        monkeypatch.setattr("src.api.user_api.Users.query", Mocker(filter_by=mock_users_query_filter_by))
+        result = check_username(username)
+        assert (isinstance(result, dict)
+                and result["code"] == res["code"]
+                and result["data"]["msg"] == res["msg"])
