@@ -1,4 +1,5 @@
-from src.db.model import db, Orders, subOrders
+from src.db.model import db, Orders, subOrders, Users
+from flask import Flask, session, request
 import datetime
 import traceback
 import sys
@@ -47,6 +48,7 @@ def get_main_orders(skip, limit):
     for i in res_query_results[skip:skip+limit]:
         this_order = i.to_json()
         this_order['current_supply'] = get_main_order_supply(i.ID)
+        this_order['remain_quantity'] = this_order['quantity'] - this_order['current_supply']
         res_orders.append(this_order)
         
     data_res = {
@@ -68,7 +70,11 @@ def add_new_main_order(json_body):
     Returns:
         如果有错误，返回 -1 ,否则返回刚刚创建的新订单的id。
         返回响应请求 res
-    """
+    """      
+    username = session.get('username')
+    query_result = Users.query.filter_by(username=username).first()
+    # 讲道理，能登陆有cookies数据库里一定找得到吧，不会有None的
+    createuser = query_result.ID
     # default order
     order_name = json_body['name']
     order_summary = json_body['summary']
@@ -78,7 +84,7 @@ def add_new_main_order(json_body):
     quantity = int(json_body['quantity'])
     price = int(json_body['price'])
     totalprice = quantity*price
-    createuser = json_body['createuser']
+    # createuser = json_body['createuser']
     comments = json_body['comments']
     phone = json_body['phone']
     status = 1
@@ -130,6 +136,7 @@ def get_main_order_with_id(mainOrderId):
     else:
         this_order = res_query_result.to_json()
         this_order['current_supply'] = get_main_order_supply(res_query_result.ID)
+        this_order['remain_quantity'] = this_order['quantity'] - this_order['current_supply']
         data_res = {
             "order" : this_order,
             "msg" : "成功完成"
@@ -154,6 +161,13 @@ def post_main_order_with_id(mainOrderId, json_body):
         返回响应请求 res
     """
     res_query_result = Orders.query.get(mainOrderId)
+    if res_query_result is None:
+        return {
+            'code' : 1,
+            'data' : {
+                'msg' : "该订单不存在"
+            }
+        }
     # 修改指定订单信息
     res_query_result.order_name = json_body['name']
     res_query_result.order_summary = json_body['summary']
@@ -164,21 +178,12 @@ def post_main_order_with_id(mainOrderId, json_body):
     res_query_result.comments = json_body['comments']
     res_query_result.phone = json_body['phone']
     db.session.commit()
-    if res_query_result is None:
-        msg = "该订单不存在"
-        code = 1
-    else:
-        msg = "成功完成"
-        code = 0
-    # 构造res
-    data_res = {
-        "msg" : msg
+    return {
+        'code' : 0,
+        'data' : {
+            'msg' : "成功完成"
+        }
     }
-    res = {
-        'code' : code,
-        'data' : data_res
-    }
-    return res
 
 def post_finish_mainOrder_with_id(mainOrderId):
     """
@@ -193,24 +198,23 @@ def post_finish_mainOrder_with_id(mainOrderId):
         res: 返回json响应
     """
     res_query_result = Orders.query.get(mainOrderId)
+    if res_query_result is None:
+        return {
+            'code' : 1,
+            'data' : {
+                'msg' : '该订单不存在'
+            }
+        }
     # 修改指定订单信息
     res_query_result.status = 3
     db.session.commit()
-    if res_query_result is None:
-        msg = "该订单不存在"
-        code = 1
-    else:
-        msg = "成功完成"
-        code = 0
-    # 构造res
-    data_res = {
-        "msg" : msg
+    return {
+        'code' : 0,
+        'data' : {
+            'msg' : '成功完成'
+        }
     }
-    res = {
-        'code' : code,
-        'data' : data_res
-    }
-    return res  
+ 
 
 def post_cancel_mainOrder_with_id(mainOrderId):
     """
@@ -226,21 +230,19 @@ def post_cancel_mainOrder_with_id(mainOrderId):
         res: 返回json响应
     """
     res_query_result = Orders.query.get(mainOrderId)
+    if res_query_result is None:
+        return {
+            'code' : 1,
+            'data' : {
+                'msg' : '该订单不存在'
+            }
+        }
     # 修改指定订单信息
     res_query_result.status = 4
     db.session.commit()
-    if res_query_result is None:
-        msg = "该订单不存在"
-        code = 1
-    else:
-        msg = "成功完成"
-        code = 0
-    # 构造res
-    data_res = {
-        "msg" : msg
+    return {
+        'code' : 0,
+        'data' : {
+            'msg' : '成功完成'
+        }
     }
-    res = {
-        'code' : code,
-        'data' : data_res
-    }
-    return res  

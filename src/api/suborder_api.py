@@ -121,26 +121,24 @@ def post_sub_order_with_id(subOrderId, json_body):
         返回响应请求 res
     """
     res_query_result = subOrders.query.get(subOrderId)
+    if res_query_result is None:
+        return {
+            'code' : 1,
+            'data' : {
+                'msg' : '该订单不存在'
+            }
+        }
     # 修改指定订单信息
     res_query_result.quantity = json_body['quantity']
     res_query_result.comments = json_body['comments']
     res_query_result.phone = json_body['phone']
     db.session.commit()
-    if res_query_result is None:
-        msg = "该订单不存在"
-        code = 1
-    else:
-        msg = "成功完成"
-        code = 0
-    # 构造res
-    data_res = {
-        "msg" : msg
+    return {
+        'code' : 0,
+        'data' : {
+            'msg' : '成功完成'
+        }
     }
-    res = {
-        'code' : code,
-        'data' : data_res
-    }
-    return res
 
 
 def post_finish_subOrder_with_id(subOrderId):
@@ -156,24 +154,22 @@ def post_finish_subOrder_with_id(subOrderId):
         res: 返回json响应
     """
     res_query_result = subOrders.query.get(subOrderId)
+    if res_query_result is None:
+        return {
+            'code' : 1,
+            'data' : {
+                'msg' : '该订单不存在'
+            }
+        }
     # 修改指定订单信息
     res_query_result.status = 3
     db.session.commit()
-    if res_query_result is None:
-        msg = "该订单不存在"
-        code = 1
-    else:
-        msg = "成功完成"
-        code = 0
-    # 构造res
-    data_res = {
-        "msg" : msg
+    return {
+        'code' : 0,
+        'data' : {
+            'msg' : '成功完成'
+        }
     }
-    res = {
-        'code' : code,
-        'data' : data_res
-    }
-    return res  
 
 def post_cancel_subOrder_with_id(subOrderId):
     """
@@ -189,24 +185,22 @@ def post_cancel_subOrder_with_id(subOrderId):
         res: 返回json响应
     """
     res_query_result = subOrders.query.get(subOrderId)
+    if res_query_result is None:
+        return {
+            'code' : 1,
+            'data' : {
+                'msg' : '该订单不存在'
+            }
+        }
     # 修改指定订单信息
     res_query_result.status = 4
     db.session.commit()
-    if res_query_result is None:
-        msg = "该订单不存在"
-        code = 1
-    else:
-        msg = "成功完成"
-        code = 0
-    # 构造res
-    data_res = {
-        "msg" : msg
+    return {
+        'code' : 0,
+        'data' : {
+            'msg' : '成功完成'
+        }
     }
-    res = {
-        'code' : code,
-        'data' : data_res
-    }
-    return res  
 
 def get_sub_order_by_main_order(mainOrderId):
     res_query_result = subOrders.query.filter_by(mainorder=mainOrderId)

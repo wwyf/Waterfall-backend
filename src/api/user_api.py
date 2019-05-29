@@ -77,6 +77,8 @@ def login_check(json_body):
         }
 
 def add_user(username, password, email, phone, usertype, userstatus):
+    if usertype is None:
+        return False
     if usertype == 'manager':
         if not (session.get('role') and session['role'] == 'manager'):
             return False
@@ -238,3 +240,5 @@ def get_orders_by_userid(userId):
         "code" : 0,
         "data" : res
     }
+# by wyf
+# this comment is useless, just for test, you can delete it safely.
