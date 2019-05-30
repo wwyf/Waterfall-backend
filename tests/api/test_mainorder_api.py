@@ -92,7 +92,8 @@ def test_get_main_orders(skip, limit, db_orders, res, monkeypatch):
     @brief Test for add_new_main_order(json_body)
 """
 # TODO: add more tests, including erroneous inputs
-param_add_new_main_order = [(
+param_add_new_main_order = [
+    (
         {
             "name": "None",
             "summary": "None",
@@ -100,9 +101,8 @@ param_add_new_main_order = [(
             "address": "None",
             "quantity": "1",
             "price": "1",
-            "createuser": "1",
             "comments": "None",
-            "phone": "None"
+            "phone": "13538383838"
         },
         {
             "role" : "customer",
@@ -112,7 +112,26 @@ param_add_new_main_order = [(
             "ID" : 1,
         },
         {"code": 0, "msg": "提交成功", "id": 0}
-    )
+    ),
+    (
+        {
+            "name": "None",
+            "summary": "None",
+            "deadline": datetime.datetime.utcnow(),
+            "address": "None",
+            "quantity": "1",
+            "price": "1",
+            "comments": "None",
+        },
+        {
+            "role" : "customer",
+            "username" : "None"
+        },
+        {
+            "ID" : 1,
+        },
+        {"code": 0, "msg": "提交成功", "id": 0}
+    ),
 ]
 
 
@@ -129,7 +148,7 @@ def test_add_new_main_order(json_body,session, targets_user, res, monkeypatch):
                 user = Users(username=username,
                              password="123456",
                              email="spam@spam.com",
-                             phone="None",
+                             phone="13588888888",
                              usertype=0,
                              userstatus=0)
                 user.ID = targets_user["ID"]
