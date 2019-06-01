@@ -27,8 +27,8 @@ CORS(wallet_bp)
 @user_api.permission_check(roles=['manager', 'customer', 'provider'])
 def solve_mainOrder_get():
     if request.method == 'GET':
-        skip = int(request.args.get('skip'))
-        limit = (request.args.get('limit'))
+        skip = request.args.get('skip')
+        limit = request.args.get('limit')
         res = mainorder_api.get_main_orders(skip, limit)
         return jsonify(res)
 
