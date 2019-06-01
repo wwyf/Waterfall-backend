@@ -63,7 +63,10 @@ def get_main_orders(skip, limit):
 def add_new_main_order(json_body):
     """
     传入一个post的body部分（已转换为json），生成一个新的订单，并在数据库中增加新的一行。
-
+    注意到
+        1. json_body 没有createuser字段，该字段从session中获得
+        2. json_body phone字段为可选项，该字段从user profile中获得，若给了phone字段则从json_body中获取。
+    
     Parameters:
         json_body : json对象 or dict
             包含订单所需的信息
@@ -86,7 +89,10 @@ def add_new_main_order(json_body):
     totalprice = quantity*price
     # createuser = json_body['createuser']
     comments = json_body['comments']
-    phone = json_body['phone']
+    if (json_body.get('phone')):
+        phone = json_body['phone']
+    else:
+        phone = query_result.phone
     status = 1
     progress = 0
     this_order = Orders(
