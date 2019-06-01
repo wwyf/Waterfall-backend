@@ -29,12 +29,12 @@ def get_sub_orders(skip, limit):
     else:
         limit = int(limit)
     role = session['role']
-    if role == "manager":
-        res_query_results = subOrders.query.all()
-    elif role == "provider":
-        username = session['username']
-        this_result = Users.query.filter_by(username=username).first()
-        res_query_results = subOrders.query.filter_by(createuser=this_result.ID)  
+    # if role == "manager":
+    res_query_results = subOrders.query.all()
+    # elif role == "provider":
+    #     username = session['username']
+    #     this_result = Users.query.filter_by(username=username).first()
+    #     res_query_results = subOrders.query.filter_by(createuser=this_result.ID)  
     res_orders = []
     for i in res_query_results[skip:skip+limit]:
         res_orders.append(i.to_json())
