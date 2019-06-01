@@ -226,7 +226,7 @@ def post_finish_mainOrder_with_id(mainOrderId):
 
 def post_cancel_mainOrder_with_id(mainOrderId):
     """
-    尝试将mainOrderId对应的母订单设置为完成状态。
+    尝试将mainOrderId对应的母订单设置为取消状态。
     1 ： 正在进行中
     
     3 ： 已完成

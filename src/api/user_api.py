@@ -205,6 +205,7 @@ def edit_user_info(userid, json_body):
         target_user.usertype = json_body["role"]
     if "status" in json_body and session['role'] == 'manager':
         target_user.userstatus = json_body["status"]
+    db.session.commit()
     return {
         "code" : 0,
         "data" : {
