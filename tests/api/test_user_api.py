@@ -20,12 +20,12 @@ from src.api.user_api import *
     @brief Test for permission_check(roles)
 """
 param_permission_check = [
-    ({}, ['supplier', 'purchaser', 'manager'], {"code": 1, "msg": "请先登录"}),
+    ({}, ['supplier', 'provider', 'manager'], {"code": 1, "msg": "请先登录"}),
     ({}, "None", {"code": 1, "msg": "请先登录"}),
     ({"username": "test"}, "None", {}),
     ({"username": "test", "role": "test"}, "None", {}),
-    ({"username": "test", "role": "test"}, ['supplier', 'purchaser', 'manager'], {"code": 1, "msg": "您没有权限使用该接口"}),
-    ({"username": "test", "role": "supplier"}, ['supplier', 'purchaser', 'manager'], {})
+    ({"username": "test", "role": "test"}, ['supplier', 'provider', 'manager'], {"code": 1, "msg": "您没有权限使用该接口"}),
+    ({"username": "test", "role": "supplier"}, ['supplier', 'provider', 'manager'], {})
 ]
 
 
