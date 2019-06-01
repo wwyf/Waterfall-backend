@@ -39,8 +39,8 @@ def get_main_orders(skip, limit):
         skip = 0
     else:
         skip = int(skip)
-    if limit is None:
-        limit = 100
+    if limit is None or limit == -1:
+        limit = 1000000
     else:
         limit = int(limit)
     res_query_results = Orders.query.all()
