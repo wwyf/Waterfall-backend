@@ -65,6 +65,7 @@ def solve_cancel_mainOrder_with_id(mainOrderId):
         return jsonify(res)
 
 @order_bp.route('/subOrder', methods=('GET', 'POST'))
+@user_api.permission_check(roles=['manager', 'provider'])
 def solve_subOrder():
     if request.method == 'GET':
         skip = request.args.get('skip')
@@ -137,6 +138,13 @@ def user_info(userId):
     if request.method == 'POST':
         json_body = json.loads(request.data.decode('utf-8'))
         res = user_api.edit_user_info(userId ,json_body)
+        return jsonify(res)
+
+@user_bp.route('/users', methods=['GET',])
+@user_api.permission_check(roles=['manager',])
+def user_infos():
+    if request.method == 'GET':
+        res = user_api.get_user_infos()
         return jsonify(res)
 
 

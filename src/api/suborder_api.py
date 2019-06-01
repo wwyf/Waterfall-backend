@@ -1,4 +1,5 @@
-from src.db.model import db, subOrders
+from src.db.model import db, subOrders, Users
+from flask import Flask, session, request
 import datetime
 import traceback
 import sys
@@ -6,6 +7,9 @@ import sys
 def get_sub_orders(skip, limit):
     """
     获得订单列表
+    
+    如果是manager，那么能够获取到所有子订单。
+    否则，只能获取到当前用户的子订单。
 
     Parameters:
         skip: int or None
@@ -24,7 +28,13 @@ def get_sub_orders(skip, limit):
         limit = 100
     else:
         limit = int(limit)
-    res_query_results = subOrders.query.all()
+    role = session['role']
+    if role == "manager":
+        res_query_results = subOrders.query.all()
+    elif role == "provider":
+        username = session['username']
+        this_result = Users.query.filter_by(username=username).first()
+        res_query_results = subOrders.query.filter_by(createuser=this_result.ID)  
     res_orders = []
     for i in res_query_results[skip:skip+limit]:
         res_orders.append(i.to_json())
@@ -49,7 +59,7 @@ def add_new_sub_order(json_body):
         返回响应请求 res
     """
     # default order
-    mainOrderId = int(json_body['mainOrderId'])
+    mainOrderId = int(json_body['mainorder'])
     createdate = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     quantity = int(json_body['quantity'])
     createuser = int(json_body['createuser'])

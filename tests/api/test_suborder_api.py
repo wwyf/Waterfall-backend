@@ -59,7 +59,7 @@ def test_get_sub_orders(skip, limit, db_suborders, res, monkeypatch):
 """
 
 param_add_new_sub_order = [
-    ({"mainOrderId": "1",
+    ({"mainorder": "1",
       "quantity": "1",
       "createuser": "0",
       "comments": "None",

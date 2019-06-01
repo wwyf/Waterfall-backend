@@ -156,6 +156,20 @@ def do_logout():
         }
     }
 
+def get_user_infos():
+    target_users = Users.query.all()
+    all_users = []
+    for u in target_users:
+        content = u.to_json()
+        content.pop("password")
+        all_users.append(content)
+    return {
+        "code" : 0,
+        "data" : {
+            "users": all_users
+        }
+    }
+
 def get_user_info(userid):
     target_user = Users.query.filter_by(ID=userid).first()
     if target_user is None:
