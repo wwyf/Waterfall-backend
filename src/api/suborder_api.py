@@ -62,18 +62,20 @@ def add_new_sub_order(json_body):
     mainOrderId = int(json_body['mainorder'])
     createdate = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     quantity = int(json_body['quantity'])
-    createuser = int(json_body['createuser'])
+    username = session['username']
+    query_result = Users.query.filter_by(username=username).first()
+    createuser = int(query_result.ID)
     comments = json_body['comments']
     phone = json_body['phone']
     status = 1
     this_order = subOrders(
-        mainOrderId,
-        createdate,
-        quantity,
-        createuser,
-        comments,
-        phone,
-        status
+        mainorder=mainOrderId,
+        createdate=createdate,
+        quantity=quantity,
+        createuser=createuser,
+        comments=comments,
+        phone=phone,
+        status=status
     )
     db.session.add(this_order)
     db.session.commit()
