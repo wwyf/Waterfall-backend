@@ -1,5 +1,6 @@
 from src.db.model import db, subOrders, Users
 from flask import Flask, session, request
+from src.api.mainorder_api import get_main_order_with_id
 import datetime
 import traceback
 import sys
@@ -58,8 +59,20 @@ def add_new_sub_order(json_body):
         如果有错误，返回 -1 ,否则返回刚刚创建的新订单的id。
         返回响应请求 res
     """
-    # default order
     mainOrderId = int(json_body['mainorder'])
+    # 检测该子订单能否下达：
+    this_quantity = int(json_body['quantity'])
+    mainorder_res = get_main_order_with_id(mainOrderId)
+    remain_quantity = mainorder_res['data']['order']['remain_quantity']
+    if this_quantity > remain_quantity:
+        return {
+            'code' : 2,
+            'data' : {
+                'msg' : "该子订单供应量超出了最大的限额",
+                'remain_quantity' : remain_quantity
+            }
+        }
+    # default order
     createdate = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     quantity = int(json_body['quantity'])
     username = session['username']
