@@ -336,7 +336,7 @@ param_post_cancel_mainOrder_with_id = [
 
 
 @pytest.mark.parametrize('res_query_result, res', param_post_cancel_mainOrder_with_id)
-def test_post_cancel_mainOrder_with_idd(res_query_result, res, monkeypatch):
+def test_post_cancel_mainOrder_with_id(res_query_result, res, monkeypatch):
     def mock_orders_query_get(id):
         if res_query_result is not None:
             fake = Faker()
@@ -364,7 +364,26 @@ def test_post_cancel_mainOrder_with_idd(res_query_result, res, monkeypatch):
     with monkeypatch.context() as m:
         monkeypatch.setattr("src.api.mainorder_api.Orders.query", Mocker(get=mock_orders_query_get))
         monkeypatch.setattr("src.api.mainorder_api.db.session", Mocker(commit=mock_db_commit))
+        monkeypatch.setattr("src.api.mainorder_api.cancel_all_subOrder_with_mainOrder", lambda x : x)
         result = post_cancel_mainOrder_with_id(res_query_result["ID"] if res_query_result is not None else 0)
         assert isinstance(result, dict) and result["code"] == res["code"] \
                and isinstance(result["data"], dict) and result["data"]["msg"] == res["msg"]
 
+def test_cancel_all_subOrder_with_mainOrder(monkeypatch):
+    def mock_suborders_query_filter_by(mainorder):
+        fake = Faker()
+        return [subOrders(mainorder=0,
+                          createdate=fake.date_time(),
+                          createuser=0,
+                          quantity=1,
+                          comments="None",
+                          phone=fake.phone_number(),
+                          status=0)]
+
+    def mock_db_commit():
+        return
+
+    with monkeypatch.context() as m:
+        monkeypatch.setattr("src.api.mainorder_api.subOrders.query", Mocker(filter_by=mock_suborders_query_filter_by))
+        monkeypatch.setattr("src.api.mainorder_api.db.session", Mocker(commit=mock_db_commit))
+        cancel_all_subOrder_with_mainOrder(1)
