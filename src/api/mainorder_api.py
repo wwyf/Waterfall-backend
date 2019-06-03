@@ -13,7 +13,8 @@ def get_main_order_supply(mainOrderId):
     Returns:
         int: 子订单供应量总和
     """
-    these_suborders = subOrders.query.filter_by(mainorder=mainOrderId)
+    # these_suborders = subOrders.query.filter_by(mainorder=mainOrderId, status=0)
+    these_suborders = subOrders.query.filter(subOrders.mainorder==mainOrderId, subOrders.status != 4)
     current_supply = 0
     if these_suborders is None:
         return current_supply
