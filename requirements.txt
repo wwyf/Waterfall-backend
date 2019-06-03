@@ -2,6 +2,7 @@ flask
 pymysql
 pytest
 pytest-cov
+requests
 faker
 flask_restful
 Flask-Session

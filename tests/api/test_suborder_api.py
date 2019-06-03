@@ -108,13 +108,13 @@ def test_add_new_sub_order(json_body, res, monkeypatch):
         monkeypatch.setattr("src.api.suborder_api.db.session", Mocker(add=mock_db_add, commit=mock_db_commit))
         monkeypatch.setattr("src.api.suborder_api.Users", Mocker(query=Mocker(filter_by=mock_users_query_filter_by)))
         monkeypatch.setattr("src.api.suborder_api.session", {"username": "test"})
-        monkeypatch.setattr("src.api.mainorder_api.get_main_order_with_id", mock_get_main_order_with_id)
+        monkeypatch.setattr("src.api.suborder_api.get_main_order_with_id", mock_get_main_order_with_id)
         result = add_new_sub_order(json_body)
         assert isinstance(result, dict) and result["code"] == res["code"]
         if result['code'] == 0:
             assert(result["data"]["msg"] == res["msg"] and result["data"]["id"] == res["id"])
         elif result['code'] == 2:
-            assert(result["data"]["msg"] == res["msg"] and result["data"]["remain_quantity"] == res["100"])
+            assert(result["data"]["msg"] == res["msg"] and result["data"]["remain_quantity"] == res["remain_quantity"])
 
 
 """
