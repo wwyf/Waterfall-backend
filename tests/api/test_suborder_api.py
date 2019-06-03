@@ -19,15 +19,15 @@ from src.api.suborder_api import *
     @brief Test for get_sub_orders(skip, limit)
 """
 param_get_sub_orders = [
-    (None, None, {"suborders_num": 200}, {"suborders_num": 100, "code": 0}),
-    (None, 1, {"suborders_num": 200}, {"suborders_num": 1, "code": 0}),
-    (1, None, {"suborders_num": 200}, {"suborders_num": 100, "code": 0}),
-    (1, 20, {"suborders_num": 200}, {"suborders_num": 20, "code": 0}),
+    (None, None, "manager", {"suborders_num": 200}, {"suborders_num": 100, "code": 0}),
+    (None, 1, "manager", {"suborders_num": 200}, {"suborders_num": 1, "code": 0}),
+    (1, None, "manager", {"suborders_num": 200}, {"suborders_num": 100, "code": 0}),
+    (1, 20, "manager", {"suborders_num": 200}, {"suborders_num": 20, "code": 0}),
 ]
 
 
-@pytest.mark.parametrize('skip, limit, db_suborders, res', param_get_sub_orders)
-def test_get_sub_orders(skip, limit, db_suborders, res, monkeypatch):
+@pytest.mark.parametrize('skip, limit, role, db_suborders, res', param_get_sub_orders)
+def test_get_sub_orders(skip, limit, role, db_suborders, res, monkeypatch):
     def mock_suborders_query_all():
         suborders = []
         fake = Faker()
@@ -49,6 +49,7 @@ def test_get_sub_orders(skip, limit, db_suborders, res, monkeypatch):
 
     with monkeypatch.context() as m:
         monkeypatch.setattr("src.api.suborder_api.subOrders.query", Mocker(all=mock_suborders_query_all))
+        monkeypatch.setattr("src.api.suborder_api.session", {"role": role})
         result = get_sub_orders(skip, limit)
         assert isinstance(result, dict) and result["code"] == res["code"] \
                and isinstance(result["data"], dict) and len(result["data"]["orders"]) == res["suborders_num"]
@@ -68,15 +69,31 @@ param_add_new_sub_order = [
 
 
 @pytest.mark.parametrize('json_body, res', param_add_new_sub_order)
-def test_add_new_main_order(json_body, res, monkeypatch):
+def test_add_new_sub_order(json_body, res, monkeypatch):
     def mock_db_add(order):
         order.ID = 0
 
     def mock_db_commit():
         return
 
+    def mock_users_query_filter_by(username):
+        def mock_first():
+            fake = Faker()
+            user = Users(username=username,
+                         password=fake.password(),
+                         email=fake.email(),
+                         phone=fake.phone_number(),
+                         usertype=0,
+                         userstatus=0)
+            user.ID = 1
+            return user
+
+        return Mocker(first=mock_first)
+
     with monkeypatch.context() as m:
         monkeypatch.setattr("src.api.suborder_api.db.session", Mocker(add=mock_db_add, commit=mock_db_commit))
+        monkeypatch.setattr("src.api.suborder_api.Users", Mocker(query=Mocker(filter_by=mock_users_query_filter_by)))
+        monkeypatch.setattr("src.api.suborder_api.session", {"username": "test"})
         result = add_new_sub_order(json_body)
         assert isinstance(result, dict) and result["code"] == res["code"] \
                and isinstance(result["data"], dict) and result["data"]["msg"] == res["msg"] \
