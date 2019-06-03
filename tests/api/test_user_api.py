@@ -252,6 +252,34 @@ def test_get_user_info(target_user, res, monkeypatch):
 
 
 """
+    @brief Test for get_user_infos()
+"""
+param_get_user_infos = [
+    ({"ID": 1}, {"code": 0})
+]
+
+@pytest.mark.parametrize('target_user, res', param_get_user_infos)
+def test_get_user_infos(target_user, res, monkeypatch):
+    def mock_users_query_all():
+        if target_user is not None:
+            user = Users(username="test",
+                         password="123456",
+                         email="spam@spam.com",
+                         phone="None",
+                         usertype=0,
+                         userstatus=0)
+            user.ID = 0
+            return [user]
+        else:
+            return None
+
+    with monkeypatch.context() as m:
+        monkeypatch.setattr("src.api.user_api.Users.query", Mocker(all=mock_users_query_all))
+        result = get_user_infos()
+        assert isinstance(result, dict) and result["code"] == res["code"]
+
+
+"""
     @brief Test for edit_user_info(userid, json_body)
 """
 param_edit_user_info = [
@@ -327,3 +355,51 @@ def test_check_username(username, target_user, res, monkeypatch):
         assert (isinstance(result, dict)
                 and result["code"] == res["code"]
                 and result["data"]["msg"] == res["msg"])
+
+
+"""
+    @brief Test for get_orders_by_userid(userId)
+"""
+param_get_orders_by_userid = [
+    (1, {"code": 0}),
+]
+
+
+@pytest.mark.parametrize('user_id, res', param_get_orders_by_userid)
+def test_get_orders_by_userid(user_id, res, monkeypatch):
+    def mock_orders_query_filter_by(createuser):
+        fake = Faker()
+        order = Orders(name=fake.name(),
+                       summary="None",
+                       createdate=fake.date_time(),
+                       deadline=fake.date_time(),
+                       address=fake.city(),
+                       quantity=1,
+                       price=1.0,
+                       totalprice=1.0,
+                       createuser=user_id,
+                       comments="None",
+                       phone=fake.phone_number(),
+                       status=0,
+                       progress=0)
+        order.ID = 1
+        return [order]
+
+    def mock_suborders_query_filter_by(createuser):
+        fake = Faker()
+        order = subOrders(mainorder=0,
+                          createdate=fake.date_time(),
+                          createuser=0,
+                          quantity=1,
+                          comments="None",
+                          phone=fake.phone_number(),
+                          status=0)
+        order.ID = 1
+        return [order]
+
+    with monkeypatch.context() as m:
+        monkeypatch.setattr("src.api.user_api.Orders.query", Mocker(filter_by=mock_orders_query_filter_by))
+        monkeypatch.setattr("src.api.user_api.subOrders.query", Mocker(filter_by=mock_suborders_query_filter_by))
+        result = get_orders_by_userid(user_id)
+        assert (isinstance(result, dict)
+                and result["code"] == res["code"])

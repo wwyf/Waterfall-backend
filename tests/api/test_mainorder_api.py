@@ -46,9 +46,10 @@ def test_get_main_order_supply(db_suborders, res, monkeypatch):
     @brief Test for get_main_orders(skip, limit)
 """
 param_get_main_orders = [
-    (None, None, {"orders_num": 200}, {"orders_num": 100, "code": 0}),
+    (None, None, {"orders_num": 200}, {"orders_num": 200, "code": 0}),
     (None, 1, {"orders_num": 200}, {"orders_num": 1, "code": 0}),
-    (1, None, {"orders_num": 200}, {"orders_num": 100, "code": 0}),
+    (1, None, {"orders_num": 200}, {"orders_num": 199, "code": 0}),
+    (1, "-1", {"orders_num": 200}, {"orders_num": 199, "code": 0}),
     (1, 20, {"orders_num": 200}, {"orders_num": 20, "code": 0}),
 ]
 
