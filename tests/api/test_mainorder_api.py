@@ -33,11 +33,11 @@ param_get_main_order_supply = [
 
 @pytest.mark.parametrize('db_suborders, res', param_get_main_order_supply)
 def test_get_main_order_supply(db_suborders, res, monkeypatch):
-    def mock_suborders_query(mainorder):
+    def mock_suborders_query(p1, p2):
         return db_suborders
 
     with monkeypatch.context() as m:
-        monkeypatch.setattr("src.api.mainorder_api.subOrders.query", Mocker(filter_by=mock_suborders_query))
+        monkeypatch.setattr("src.api.mainorder_api.subOrders.query", Mocker(filter=mock_suborders_query))
         result = get_main_order_supply(0)
         assert result == res and isinstance(result, int)
 
