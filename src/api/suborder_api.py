@@ -63,7 +63,6 @@ def add_new_sub_order(json_body):
     # 检测该子订单能否下达：
     this_quantity = int(json_body['quantity'])
     mainorder_res = get_main_order_with_id(mainOrderId)
-    print(mainorder_res)
     remain_quantity = mainorder_res['data']['order']['remain_quantity']
     if this_quantity > remain_quantity:
         return {
