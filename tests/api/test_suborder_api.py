@@ -64,7 +64,12 @@ param_add_new_sub_order = [
       "quantity": "1",
       "createuser": "0",
       "comments": "None",
-      "phone": "None"}, {"code": 0, "msg": "提交成功", "id": 0})
+      "phone": "None"}, {"code": 0, "msg": "提交成功", "id": 0}),
+    ({"mainorder": "1",
+      "quantity": "10000",
+      "createuser": "0",
+      "comments": "None",
+      "phone": "None"}, {"code": 2, "msg": "该子订单供应量超出了最大的限额", "remain_quantity": 100})
 ]
 
 
@@ -89,15 +94,27 @@ def test_add_new_sub_order(json_body, res, monkeypatch):
             return user
 
         return Mocker(first=mock_first)
+    
+    def mock_get_main_order_with_id(mainOrderId):
+        return {
+            'data':{
+                'order' :{
+                    'remain_quantity' : 100
+                }
+            }
+        }
 
     with monkeypatch.context() as m:
         monkeypatch.setattr("src.api.suborder_api.db.session", Mocker(add=mock_db_add, commit=mock_db_commit))
         monkeypatch.setattr("src.api.suborder_api.Users", Mocker(query=Mocker(filter_by=mock_users_query_filter_by)))
         monkeypatch.setattr("src.api.suborder_api.session", {"username": "test"})
+        monkeypatch.setattr("src.api.mainorder_api.get_main_order_with_id", mock_get_main_order_with_id)
         result = add_new_sub_order(json_body)
-        assert isinstance(result, dict) and result["code"] == res["code"] \
-               and isinstance(result["data"], dict) and result["data"]["msg"] == res["msg"] \
-               and result["data"]["id"] == res["id"]
+        assert isinstance(result, dict) and result["code"] == res["code"]
+        if result['code'] == 0:
+            assert(result["data"]["msg"] == res["msg"] and result["data"]["id"] == res["id"])
+        elif result['code'] == 2:
+            assert(result["data"]["msg"] == res["msg"] and result["data"]["remain_quantity"] == res["100"])
 
 
 """
