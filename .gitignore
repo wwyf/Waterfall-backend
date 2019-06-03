@@ -1,5 +1,6 @@
 # sql config file
 /src/db/sql_config.json
+/src/db/sql_config.test.json
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
