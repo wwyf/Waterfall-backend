@@ -248,6 +248,8 @@ def post_cancel_mainOrder_with_id(mainOrderId):
         }
     # 修改指定订单信息
     res_query_result.status = 4
+    # 将相关的子订单设置为取消状态。
+    cancel_all_subOrder_with_mainOrder(mainOrderId)
     db.session.commit()
     return {
         'code' : 0,
@@ -255,3 +257,13 @@ def post_cancel_mainOrder_with_id(mainOrderId):
             'msg' : '成功完成'
         }
     }
+
+def cancel_all_subOrder_with_mainOrder(mainOrderId):
+    """
+    取消所有指定母订单下的子订单。
+    """
+    query_results = subOrders.query.filter_by(mainorder=mainOrderId)
+    for i in query_results:
+        i.status = 4
+    db.session.commit()
+    return
