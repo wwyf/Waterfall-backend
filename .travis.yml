@@ -4,7 +4,7 @@ python:
 - '3.6'
 before_install:
 - openssl aes-256-cbc -K $encrypted_70ca040df3bb_key -iv $encrypted_70ca040df3bb_iv
-  -in src/db/sql_config.test.json.enc -out src/db/sql_config.test.json -d
+  -in sql_config.test.json.enc -out src/db/sql_config.test.json -d
 install:
 - pip install -r requirements.txt
 - pip install -U pytest
