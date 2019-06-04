@@ -123,7 +123,7 @@ class subOrders(db.Model):
 
 db.create_all()
 
-has_admin = Users.query.filter_by(role='manager').first()
+has_admin = Users.query.filter_by(usertype='manager').first()
 if has_admin is None:
     admin = Users(
         username='admin',
