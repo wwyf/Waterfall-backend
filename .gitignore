@@ -1,6 +1,7 @@
 # sql config file
 /src/db/sql_config.json
 /src/db/sql_config.test.json
+deploy_rsa
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
