@@ -251,7 +251,7 @@ def get_orders_by_userid(userId):
         this_order = order.to_json()
         this_order['current_supply'] = get_main_order_supply(order.ID)
         this_order['remain_quantity'] = this_order['quantity'] - this_order['current_supply']
-        res['mainOrder'].append(order.to_json())
+        res['mainOrder'].append(this_order)
     for order in target_sub_order:
         res['subOrder'].append(order.to_json())
 
