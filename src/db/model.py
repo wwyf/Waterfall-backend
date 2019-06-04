@@ -123,4 +123,15 @@ class subOrders(db.Model):
 
 db.create_all()
 
-
+has_admin = Users.query.filter_by(role='manager').first()
+if has_admin is None:
+    admin = Users(
+        username='admin',
+        password='admin888',
+        email='admin@admin.com',
+        phone='13888888888',
+        usertype='manager',
+        userstatus=1
+    )
+    db.session.add(admin)
+    db.session.commit()
