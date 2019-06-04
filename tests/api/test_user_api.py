@@ -397,9 +397,13 @@ def test_get_orders_by_userid(user_id, res, monkeypatch):
         order.ID = 1
         return [order]
 
+    def mock_get_main_order_supply(mainOrderId):
+        return 0
+
     with monkeypatch.context() as m:
         monkeypatch.setattr("src.api.user_api.Orders.query", Mocker(filter_by=mock_orders_query_filter_by))
         monkeypatch.setattr("src.api.user_api.subOrders.query", Mocker(filter_by=mock_suborders_query_filter_by))
+        monkeypatch.setattr("src.api.user_api.get_main_order_supply", mock_get_main_order_supply)
         result = get_orders_by_userid(user_id)
         assert (isinstance(result, dict)
                 and result["code"] == res["code"])
