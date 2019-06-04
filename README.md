@@ -55,3 +55,5 @@ build your image.
 docker build -t waterfall-backend .
 docker run  -d waterfall-backend
 ```
+
+Also you can get it from [DockerHub](https://cloud.docker.com/u/wwyf/repository/docker/wwyf/waterfall-backend)
