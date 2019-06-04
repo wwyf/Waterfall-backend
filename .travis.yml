@@ -12,6 +12,6 @@ script:
 - py.test
 addons:
   ssh_known_hosts:
-    - waterfall.wwyf.top
+  - waterfall.wwyf.top
 after_success:
 - chmod +x ./deploy.sh && ./deploy.sh
