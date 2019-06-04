@@ -1,5 +1,6 @@
 from flask import Flask, render_template, session, request, redirect, jsonify
 from src.db.model import db, Users, Orders, subOrders
+from src.api.mainorder_api import get_main_order_supply
 from functools import wraps
 import json
 
@@ -247,6 +248,9 @@ def get_orders_by_userid(userId):
     }
 
     for order in target_main_order:
+        this_order = order.to_json()
+        this_order['current_supply'] = get_main_order_supply(order.ID)
+        this_order['remain_quantity'] = this_order['quantity'] - this_order['current_supply']
         res['mainOrder'].append(order.to_json())
     for order in target_sub_order:
         res['subOrder'].append(order.to_json())
