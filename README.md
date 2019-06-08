@@ -2,26 +2,30 @@
 
 ![](https://travis-ci.org/wwyf/Waterfall-backend.svg?branch=master)
 
-## Envinment
+## Install
 
-`python=3.6`
+### Prerequisite
 
-## Start in debug mode
+- python : 3.6
+- pip
+
+### Install
+
+Create a python virtual environment, and
+(just an example)
 
 ```
 git clone git@github.com:wwyf/Waterfall-backend.git
 cd Waterfall-backend
-```
-
-Then you should setup the environment by instruments below.
-```
-# create virtual environment
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-Finally you can run Waterfall-backend in debug mode.
+## Deploy
+
+Finally you can run Waterfall-backend.
+
 ```
 export FLASK_APP=src
 export FLASK_ENV=development # turn on debug mode and other dev features
@@ -33,9 +37,6 @@ Backend will run on http://localhost:5000.
 Or maybe you can just run with the sample shell script `./run.sh` after you configure with virtual environment.
 
 ```shell
-git clone git@github.com:wwyf/Waterfall-backend.git
-cd Waterfall-backend
-source venv/bin/activate
 ./run.sh
 ```
 
@@ -49,7 +50,7 @@ git clone git@github.com:wwyf/Waterfall-backend.git
 cd Waterfall-backend
 ```
 
-build your image.
+To build the project into docker image, it's as simple as
 
 ```
 docker build -t waterfall-backend .
